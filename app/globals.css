@@ -1,7 +1,31 @@
-/* base styles */
-*{box-sizing:border-box}
-html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-h1{font-size:2rem;margin:0 0 .5rem}
-p{margin:.25rem 0}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply text-gray-800;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-brand-beige text-brand-teal border-2 border-brand-teal font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center;
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .container-custom {
+    @apply max-w-6xl mx-auto px-6 md:px-8;
+  }
+}
