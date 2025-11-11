@@ -1,142 +1,88 @@
+// components/LeadForm.jsx
 "use client";
+
 import { useState } from "react";
 
 export default function LeadForm() {
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState(null);
 
   async function onSubmit(e) {
     e.preventDefault();
-    setSending(true);
-    setError("");
-    setDone(false);
+    setMsg(null);
+    setLoading(true);
 
     const form = e.currentTarget;
-    const payload = Object.fromEntries(new FormData(form).entries());
+    const payload = {
+      source: "hero_lead_form",
+      firstName: form.firstName.value.trim(),
+      lastName: form.lastName.value.trim(),
+      email: form.email.value.trim(),
+      company: form.company.value.trim(),
+      roomSize: form.roomSize.value,
+      timeline: form.timeline.value,
+      notes: form.notes.value,
+    };
 
     try {
-      const res = await fetch("/api/lead", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json().catch(() => ({}));
+      const json = await res.json().catch(() => ({}));
 
-      if (!res.ok || !data.ok) {
-        setError(
-          data?.message ||
-            "Sorry—something went wrong sending your request. Please try again."
-        );
-        setSending(false);
-        return;
+      if (!res.ok || !json?.ok) {
+        throw new Error(json?.error || `Request failed: ${res.status}`);
       }
 
-      // GA4 event (fires only on success)
-      if (typeof window !== "undefined" && typeof window.gtag !== "undefined") {
-        window.gtag("event", "lead_form_submit", {
-          event_category: "Lead",
-          event_label: "Hero Form",
-          value: 1,
-          currency: "USD",
-        });
-      }
-
-      setDone(true);
-      setSending(false);
+      setMsg({ type: "success", text: "Thanks—your message was sent." });
       form.reset();
     } catch (err) {
-      setError(
-        "Network error submitting the form. Please check your connection and try again."
-      );
-      setSending(false);
+      setMsg({ type: "error", text: err?.message || "Email could not be sent." });
+    } finally {
+      setLoading(false);
     }
   }
 
-  const inputBase =
-    "mt-1 w-full rounded-xl border border-bronze-300 bg-white text-gray-900 placeholder-gray-500 px-4 py-3 focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/30 outline-none";
-  const selectBase =
-    "mt-1 w-full rounded-xl border border-bronze-300 bg-white text-gray-900 px-4 py-3 focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/30 outline-none";
-
   return (
-    <form onSubmit={onSubmit} className="space-y-4" aria-live="polite">
-      <div>
-        <label className="text-sm font-medium text-navy-900">Your name</label>
-        <input name="name" required className={inputBase} />
+    <form onSubmit={onSubmit} className="grid gap-3 max-w-xl">
+      <div className="grid grid-cols-2 gap-3">
+        <input name="firstName" placeholder="First name*" required className="border rounded p-2" />
+        <input name="lastName" placeholder="Last name*" required className="border rounded p-2" />
       </div>
+      <input type="email" name="email" placeholder="Email*" required className="border rounded p-2" />
+      <input name="company" placeholder="Company" className="border rounded p-2" />
+      <select name="roomSize" className="border rounded p-2">
+        <option value="">Room size</option>
+        <option>Huddle (2–4)</option>
+        <option>Small (4–6)</option>
+        <option>Medium (6–10)</option>
+        <option>Large (10–20)</option>
+        <option>Boardroom / Training</option>
+      </select>
+      <select name="timeline" className="border rounded p-2">
+        <option value="">Timeline</option>
+        <option>ASAP (0–2 weeks)</option>
+        <option>Soon (2–4 weeks)</option>
+        <option>Planning (1–3 months)</option>
+        <option>Exploring (3+ months)</option>
+      </select>
+      <textarea name="notes" placeholder="Anything else we should know?" rows={4} className="border rounded p-2" />
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-black text-white rounded p-2 disabled:opacity-60"
+      >
+        {loading ? "Sending…" : "Get my fixed-price quote"}
+      </button>
 
-      <div>
-        <label className="text-sm font-medium text-navy-900">Work email</label>
-        <input name="email" type="email" required className={inputBase} />
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-navy-900">
-          Company (optional)
-        </label>
-        <input name="company" className={inputBase} />
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-navy-900">Room size</label>
-        <select name="roomSize" required className={selectBase} defaultValue="">
-          <option value="" disabled>
-            Select room size
-          </option>
-          <option value="8–12 (Essential — $2,500)">
-            8–12 people (Essential — $2,500)
-          </option>
-          <option value="12–20 (Professional — $4,500)">
-            12–20 people (Professional — $4,500)
-          </option>
-          <option value="20+ (Enterprise — $8,000)">
-            20+ people (Enterprise — $8,000)
-          </option>
-          <option value="Multiple rooms">Multiple rooms</option>
-          <option value="Not sure yet">Not sure yet</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-navy-900">Timeline</label>
-        <select name="timeline" required className={selectBase} defaultValue="">
-          <option value="" disabled>
-            When do you need this?
-          </option>
-          <option value="ASAP (within 2 weeks)">ASAP (within 2 weeks)</option>
-          <option value="Within 1 month">Within 1 month</option>
-          <option value="1–3 months">1–3 months</option>
-          <option value="Planning ahead">Just planning ahead</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-navy-900">
-          Notes (optional)
-        </label>
-        <textarea
-          name="notes"
-          rows={5}
-          className={inputBase}
-          placeholder="Anything we should know? Current gear, room dimensions, must-haves…"
-        />
-      </div>
-
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {done && (
-        <p className="text-sm text-green-700">
-          Thanks! We received your request and will reply within 4 business
-          hours.
+      {msg && (
+        <p className={msg.type === "success" ? "text-green-700" : "text-red-700"}>
+          {msg.text}
         </p>
       )}
-
-      <button
-        disabled={sending}
-        className="w-full rounded-xl bg-brand-teal px-6 py-4 font-semibold text-white shadow-lg transition-colors hover:bg-brand-sage-dark disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {sending ? "Submitting…" : "Get My Fixed-Price Quote"}
-      </button>
     </form>
   );
 }
