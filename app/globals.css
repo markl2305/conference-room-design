@@ -4,7 +4,7 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply text-gray-800 bg-white; }
+  body { @apply text-gray-800 bg-white antialiased; }
 }
 
 @layer components {
