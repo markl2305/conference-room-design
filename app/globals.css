@@ -1,19 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* app/globals.css */
+@import "tailwindcss";
 
+/* Base */
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply text-gray-800; }
+
+  /* Avoid @apply here to sidestep the v4 parser error */
+  body {
+    color: #1f2937; /* same as text-gray-800 */
+    background-color: #ffffff;
+  }
 }
 
+/* Components */
 @layer components {
   .btn-primary {
     @apply bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center shadow-md hover:shadow-lg;
   }
+
   .btn-secondary {
-    @apply border-2 border-white text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center hover:bg-white/10;
+    @apply bg-white hover:bg-brand-beige text-brand-teal border-2 border-brand-teal font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center;
   }
+
   .section-padding { @apply py-16 md:py-24; }
   .container-custom { @apply max-w-6xl mx-auto px-6 md:px-8; }
+}
+
+/* Theme extensions for Tailwind v4 */
+@theme {
+  --color-brand-teal: #279A92;
+  --color-brand-teal-dark: #1f7e77;
+  --color-brand-teal-light: #32b5ab;
+  --color-brand-sage: #96B1AD;
+  --color-brand-beige: #F1E7D8;
 }
