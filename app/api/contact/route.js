@@ -1,5 +1,10 @@
 // app/api/contact/route.js
+import { NextResponse } from "next/server";
 import { Resend } from "resend";
+
+export const runtime = "nodejs"; // ✅ required for Resend SDK
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req) {
   try {
@@ -16,15 +21,13 @@ export async function POST(req) {
       notes = ""
     } = body || {};
 
-    // Basic required fields check
     if (!firstName || !lastName || !email) {
-      return new Response("Missing required fields.", { status: 400 });
+      return NextResponse.json({ ok: false, error: "Missing required fields." }, { status: 400 });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
     const fullName = `${firstName} ${lastName}`.trim();
 
-    // 1) Internal notification to CalLord sales inbox
+    // --- Build HTML once ---
     const internalHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
         <h2>New Lead: ${roomSize || "Unspecified room size"}</h2>
@@ -34,21 +37,10 @@ export async function POST(req) {
         <p><strong>Room Size:</strong> ${roomSize || "—"}</p>
         <p><strong>Timeline:</strong> ${timeline || "—"}</p>
         <p><strong>Source:</strong> ${source}</p>
-        <p><strong>Notes:</strong><br>${(notes || "—")
-          .toString()
-          .replace(/\n/g, "<br>")}</p>
+        <p><strong>Notes:</strong><br>${(notes || "—").toString().replace(/\n/g, "<br>")}</p>
       </div>
     `;
 
-    await resend.emails.send({
-      from: "CalLord UT Leads <leads@callordut.com>",   // <-- use a verified sender
-      to: ["sales@callordut.com"],                      // <-- your sales inbox
-      replyTo: email,
-      subject: `New Lead: ${roomSize || "Room"} • ${fullName}`,
-      html: internalHtml,
-    });
-
-    // 2) Auto-reply to the prospect
     const prospectHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
         <h2>Thanks, ${firstName} — we’re on it.</h2>
@@ -59,21 +51,40 @@ export async function POST(req) {
           <li><strong>Timeline:</strong> ${timeline || "—"}</li>
           <li><strong>Company:</strong> ${company || "—"}</li>
         </ul>
-        <p>If anything changes, reply to this email or call <a href="tel:+15052261457">(505) 226-1457</a>.</p>
+        <p>If anything changes, reply to this email or call <a href="tel:+15053157773">(505) 315-7773</a>.</p>
         <p style="margin-top:16px">— Mark at CalLord Unified Technologies</p>
       </div>
     `;
 
-    await resend.emails.send({
-      from: "CalLord UT <no-reply@callordut.com>",      // <-- use a verified sender
+    // 1) Send internal notification (must succeed)
+    const { error: internalError, data } = await resend.emails.send({
+      from: "CalLord UT Leads <leads@callordut.com>", // domain must be Verified in Resend
+      to: ["sales@callordut.com"],
+      reply_to: email,                                  // ✅ correct field name
+      subject: `New Lead: ${roomSize || "Room"} • ${fullName}`,
+      html: internalHtml,
+    });
+
+    if (internalError) {
+      return NextResponse.json({ ok: false, error: internalError.message }, { status: 502 });
+    }
+
+    // 2) Send prospect auto-reply (best-effort; don't fail UI)
+    const { error: prospectError } = await resend.emails.send({
+      from: "CalLord UT <no-reply@callordut.com>",
       to: [email],
       subject: "We received your conference room design request",
       html: prospectHtml,
     });
 
-    return Response.json({ ok: true });
+    if (prospectError) {
+      // Log it but still succeed so the UI doesn’t show failure
+      console.warn("Autoresponder failed:", prospectError);
+    }
+
+    return NextResponse.json({ ok: true, id: data?.id }, { status: 200 });
   } catch (err) {
     console.error("Contact API error:", err);
-    return new Response("Email service failed.", { status: 500 });
+    return NextResponse.json({ ok: false, error: err?.message || "Server error" }, { status: 500 });
   }
 }
