@@ -1,3 +1,4 @@
+// app/page.js
 import Image from "next/image";
 import Link from "next/link";
 import LeadForm from "@/components/LeadForm";
@@ -11,9 +12,9 @@ export const metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen">
-      {/* Header */}
+      {/* Header (logo larger, proper side padding, CTA off the edge) */}
       <header className="w-full bg-brand-beige border-b border-brand-sage/40">
-        <div className="container-custom flex items-center justify-between py-4">
+        <div className="container-custom px-4 md:px-6 flex items-center justify-between py-4">
           <Link href="https://callordut.com" className="flex items-center gap-3">
             <Image
               src="/logo.png"
@@ -21,13 +22,13 @@ export default function HomePage() {
               width={720}
               height={400}
               priority
-              className="h-[64px] w-auto"
+              className="h-[80px] md:h-[88px] w-auto"
             />
           </Link>
           <div className="hidden md:block">
             <Link
               href="#lead"
-              className="rounded-xl bg-brand-teal px-4 py-2 font-semibold text-white hover:opacity-90"
+              className="rounded-xl bg-brand-teal px-4 py-2 font-semibold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal/40"
             >
               Get a Quote
             </Link>
@@ -35,9 +36,9 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero (added side padding, improved bullets, photo under bullets) */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-teal to-brand-teal/85 text-white">
-        <div className="container-custom py-12 md:py-16">
+        <div className="container-custom px-4 md:px-6 py-12 md:py-16">
           {/* Trust bar ABOVE headline */}
           <div className="text-center mb-6">
             <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-white/90">
@@ -80,15 +81,38 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Form */}
+          {/* Form row */}
           <div id="lead" className="mt-10 grid md:grid-cols-2 gap-10 items-start">
+            {/* Left column: bullets + photo */}
             <div className="order-2 md:order-1 text-white/90">
-              <ul className="space-y-3 text-base">
-                <li>• Fixed pricing. No surprises. No equipment sales conflict.</li>
-                <li>• D-Tools Pro package: rack elevations, cable schedules, and as-built docs.</li>
-                <li>• Vendor-neutral specs so you can bid competitively or DIY.</li>
-                <li>• 14-day revision guarantee. Response within 4 business hours.</li>
+              <ul className="space-y-3 text-base md:text-lg leading-7 text-white/95">
+                {[
+                  "Fixed pricing. No surprises. No equipment sales conflict.",
+                  "D-Tools Pro package: rack elevations, cable schedules, and as-built docs.",
+                  "Vendor-neutral specs so you can bid competitively or DIY.",
+                  "14-day revision guarantee. Response within 4 business hours.",
+                ].map((t) => (
+                  <li key={t} className="flex gap-3 pl-1">
+                    <span className="mt-2 h-2 w-2 rounded-full bg-amber-300 shrink-0" />
+                    <span>{t}</span>
+                  </li>
+                ))}
               </ul>
+
+              {/* Photo under bullets to fill space */}
+              <div className="mt-8">
+                <figure className="rounded-xl overflow-hidden shadow-lg shadow-black/20 ring-1 ring-white/10">
+                  <img
+                    src="/images/hero-room.png"
+                    alt="Recent conference room design delivered in 5 days"
+                    className="w-full h-56 md:h-72 object-cover"
+                    loading="eager"
+                  />
+                </figure>
+                <figcaption className="mt-2 text-sm text-white/80">
+                  Example deliverable: signal-flow diagram • rack elevations • cable schedule
+                </figcaption>
+              </div>
 
               <div className="mt-6 text-white/80 text-sm">
                 Questions now? Call{" "}
@@ -99,6 +123,7 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Right column: form */}
             <div className="order-1 md:order-2">
               <LeadForm />
             </div>
@@ -162,7 +187,8 @@ export default function HomePage() {
                 <p className="text-sm text-gray-600">{t.days}</p>
 
                 <div className="mt-4 rounded border border-green-200 bg-green-50 p-3 text-center text-xs text-green-800">
-                  ✓ 14-day free revisions<br />✓ 100% deposit refund if not satisfied
+                  ✓ 14-day free revisions
+                  <br />✓ 100% deposit refund if not satisfied
                 </div>
 
                 <ul className="mt-4 space-y-2 text-gray-700">
@@ -189,12 +215,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials (generic placeholders until replaced) */}
+      {/* Testimonials */}
       <section className="section-padding bg-brand-beige">
         <div className="container-custom">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">What Facility Managers Say</h2>
-            <p className="text-xl text-gray-600">Real results from real projects</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -262,17 +287,15 @@ export default function HomePage() {
           </div>
 
           <div className="text-center mt-10">
-            <a href="#lead" className="rounded-xl bg-brand-teal px-5 py-3 font-semibold text-white hover:opacity-90">
+            <a
+              href="#lead"
+              className="rounded-xl bg-brand-teal px-5 py-3 font-semibold text-white hover:opacity-90"
+            >
               Get Your Fixed-Price Quote
             </a>
           </div>
         </div>
       </section>
-
-      {/* NOTE: The “See What You Get” portfolio section is intentionally hidden for now. */}
-      {false && (
-        <section className="section-padding bg-brand-beige">{/* portfolio content would be here */}</section>
-      )}
 
       {/* Footer */}
       <footer className="bg-white">
