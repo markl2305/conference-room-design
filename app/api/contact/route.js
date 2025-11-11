@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-export const runtime = "nodejs"; // ✅ required for Resend SDK
+export const runtime = "nodejs"; // required for Resend SDK
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -30,6 +30,7 @@ export async function POST(req) {
 
     const fullName = `${firstName} ${lastName}`.trim();
 
+    // Internal notification HTML
     const internalHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
         <h2>New Lead: ${roomSize || "Unspecified room size"}</h2>
@@ -43,6 +44,7 @@ export async function POST(req) {
       </div>
     `;
 
+    // Prospect autoresponder HTML
     const prospectHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
         <h2>Thanks, ${firstName} — we’re on it.</h2>
@@ -57,9 +59,9 @@ export async function POST(req) {
       </div>
     `;
 
-    // 1) Internal email (must succeed)
+    // 1) Must-succeed internal email
     const { data, error: internalError } = await resend.emails.send({
-      from: "CalLord UT Leads <leads@design.callordut.com>", // ✅ verified subdomain
+      from: "CalLord UT Leads <leads@design.callordut.com>", // use verified domain
       to: ["sales@callordut.com"],
       reply_to: email,
       subject: `New Lead: ${roomSize || "Room"} • ${fullName}`,
@@ -71,9 +73,9 @@ export async function POST(req) {
       return NextResponse.json({ ok: false, error: internalError.message }, { status: 502 });
     }
 
-    // 2) Prospect autoresponder (best-effort)
+    // 2) Best-effort autoresponder (don’t fail UI)
     const { error: prospectError } = await resend.emails.send({
-      from: "CalLord UT <no-reply@design.callordut.com>", // ✅ verified subdomain
+      from: "CalLord UT <no-reply@design.callordut.com>",    // use verified domain
       to: [email],
       subject: "We received your conference room design request",
       html: prospectHtml,
