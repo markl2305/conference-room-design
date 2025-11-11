@@ -37,8 +37,12 @@ export default function Page() {
           <div className="grid md:grid-cols-2 gap-10 items-center">
             {/* Left: headline & proof */}
             <div>
-              {/* Logo clickable to main site */}
-              <Link href="https://callordut.com" target="_blank" rel="noopener noreferrer" className="inline-block mb-6">
+              <Link
+                href="https://callordut.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mb-6"
+              >
                 <Image
                   src="/logo.png"
                   alt="CalLord Unified Technologies"
@@ -53,15 +57,25 @@ export default function Page() {
                 Professional Conference Room Design—Delivered in 3–7 Days
               </h1>
               <p className="text-lg md:text-xl text-white/90 mb-6">
-                Vendor-neutral, fixed-price design packages with D-Tools documentation. Start procurement quickly and install with confidence.
+                Vendor-neutral, fixed-price design packages with D-Tools
+                documentation. Start procurement quickly and install with
+                confidence.
               </p>
 
               {/* Mini trust badges */}
               <div className="flex flex-wrap gap-3 mb-8">
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">100% Remote</span>
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">D-Tools Docs</span>
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">Nationwide</span>
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">Fixed Pricing</span>
+                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
+                  100% Remote
+                </span>
+                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
+                  D-Tools Docs
+                </span>
+                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
+                  Nationwide
+                </span>
+                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
+                  Fixed Pricing
+                </span>
               </div>
             </div>
 
@@ -73,11 +87,13 @@ export default function Page() {
         </div>
       </section>
 
-      {/* (Placeholder) Testimonials — generic until you replace */}
+      {/* Testimonials */}
       <section className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">What Facility Managers Say</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+              What Facility Managers Say
+            </h2>
             <p className="text-xl text-gray-600">Real results from real projects</p>
           </div>
 
@@ -85,7 +101,8 @@ export default function Page() {
             <div className="bg-brand-beige p-6 rounded-lg border-l-4 border-brand-teal">
               <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
               <p className="text-gray-700 mb-4 italic">
-                “D-Tools specs let us get 3 competitive bids. We saved over $10k and the install was smooth.”
+                “D-Tools specs let us get 3 competitive bids. We saved over $10k
+                and the install was smooth.”
               </p>
               <div className="border-t border-brand-sage pt-4">
                 <p className="font-semibold text-gray-900">Tom R.</p>
@@ -96,7 +113,8 @@ export default function Page() {
             <div className="bg-brand-beige p-6 rounded-lg border-l-4 border-brand-teal">
               <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
               <p className="text-gray-700 mb-4 italic">
-                “Got our design in four days. No more HDMI treasure hunts—everything just works.”
+                “Got our design in four days. No more HDMI treasure
+                hunts—everything just works.”
               </p>
               <div className="border-t border-brand-sage pt-4">
                 <p className="font-semibold text-gray-900">Sarah C.</p>
@@ -107,7 +125,8 @@ export default function Page() {
             <div className="bg-brand-beige p-6 rounded-lg border-l-4 border-brand-teal">
               <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
               <p className="text-gray-700 mb-4 italic">
-                “Documentation was flawless—our installer said it was the best package he’s seen.”
+                “Documentation was flawless—our installer said it was the best
+                package he’s seen.”
               </p>
               <div className="border-t border-brand-sage pt-4">
                 <p className="font-semibold text-gray-900">David M.</p>
@@ -117,8 +136,6 @@ export default function Page() {
           </div>
         </div>
       </section>
-
-      {/* Keep the rest of your sections (pricing, process, FAQ, footer) as-is for now */}
     </main>
   );
 }
