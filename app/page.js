@@ -18,8 +18,8 @@ export default function HomePage() {
             <Image
               src="/logo.png"
               alt="CalLord Unified Technologies"
-              width={360}
-              height={200}
+              width={720}
+              height={400}
               priority
               className="h-[64px] w-auto"
             />
