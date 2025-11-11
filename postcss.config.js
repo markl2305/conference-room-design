@@ -1,4 +1,4 @@
-// postcss.config.js — Tailwind v3 style
+// Tailwind v3 PostCSS pipeline
 module.exports = {
   plugins: {
     tailwindcss: {},
