@@ -12,9 +12,10 @@ export const metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen">
-      {/* Header (logo larger, proper side padding, CTA off the edge) */}
+      {/* Header (logo doubled, CTA and Call pulled in with extra side padding) */}
       <header className="w-full bg-brand-beige border-b border-brand-sage/40">
-        <div className="container-custom px-4 md:px-6 flex items-center justify-between py-4">
+        <div className="container-custom px-6 md:px-8 flex items-center justify-between py-3">
+          {/* Left: Logo (doubled) */}
           <Link href="https://callordut.com" className="flex items-center gap-3">
             <Image
               src="/logo.png"
@@ -22,13 +23,21 @@ export default function HomePage() {
               width={720}
               height={400}
               priority
-              className="h-[80px] md:h-[88px] w-auto"
+              className="h-[160px] md:h-[176px] w-auto"
             />
           </Link>
-          <div className="hidden md:block">
+
+          {/* Right: Call + CTA (not flush to the right) */}
+          <div className="hidden md:flex items-center gap-3">
+            <a
+              href="tel:+15052261457"
+              className="rounded-xl border border-brand-teal/30 px-3 py-2 text-sm font-semibold text-brand-teal hover:bg-brand-teal/10"
+            >
+              Call (505) 226-1457
+            </a>
             <Link
               href="#lead"
-              className="rounded-xl bg-brand-teal px-4 py-2 font-semibold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal/40"
+              className="rounded-xl bg-brand-teal px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal/40"
             >
               Get a Quote
             </Link>
@@ -36,7 +45,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero (added side padding, improved bullets, photo under bullets) */}
+      {/* Hero (added side padding, improved bullets, photo under bullets, phone removed here) */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-teal to-brand-teal/85 text-white">
         <div className="container-custom px-4 md:px-6 py-12 md:py-16">
           {/* Trust bar ABOVE headline */}
@@ -99,7 +108,7 @@ export default function HomePage() {
                 ))}
               </ul>
 
-              {/* Photo under bullets to fill space */}
+              {/* Photo under bullets to fill space (figcaption removed) */}
               <div className="mt-8">
                 <figure className="rounded-xl overflow-hidden shadow-lg shadow-black/20 ring-1 ring-white/10">
                   <img
@@ -109,17 +118,6 @@ export default function HomePage() {
                     loading="eager"
                   />
                 </figure>
-                <figcaption className="mt-2 text-sm text-white/80">
-                  Example deliverable: signal-flow diagram • rack elevations • cable schedule
-                </figcaption>
-              </div>
-
-              <div className="mt-6 text-white/80 text-sm">
-                Questions now? Call{" "}
-                <a href="tel:+15052261457" className="font-semibold underline">
-                  (505) 226-1457
-                </a>
-                .
               </div>
             </div>
 
