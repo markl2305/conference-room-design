@@ -5,396 +5,300 @@ import LeadForm from "@/components/LeadForm";
 export const metadata = {
   title: "Professional Conference Room Design | CalLord Unified Technologies",
   description:
-    "Fixed-price remote conference room design delivered in 3–7 days. D-Tools documentation, signal flow, rack elevations, and cable schedules—ready for your installer.",
+    "Fixed-price, vendor-neutral conference room design delivered in 3–7 days. D-Tools documentation, signal flow, rack elevations, and installation guidance. 100% remote.",
 };
 
-export default function Page() {
+export default function HomePage() {
   return (
-    <main>
-      {/* ===================== HERO ===================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-teal to-brand-sage text-white">
-        <div className="container-custom section-padding">
+    <main className="min-h-screen">
+      {/* Header */}
+      <header className="w-full bg-brand-beige border-b border-brand-sage/40">
+        <div className="container-custom flex items-center justify-between py-4">
+          <Link href="https://callordut.com" className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="CalLord Unified Technologies"
+              width={360}
+              height={200}
+              priority
+              className="h-[64px] w-auto"
+            />
+          </Link>
+          <div className="hidden md:block">
+            <Link
+              href="#lead"
+              className="rounded-xl bg-brand-teal px-4 py-2 font-semibold text-white hover:opacity-90"
+            >
+              Get a Quote
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-brand-teal to-brand-teal/85 text-white">
+        <div className="container-custom py-12 md:py-16">
           {/* Trust bar ABOVE headline */}
           <div className="text-center mb-6">
             <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-white/90">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">✓</span>
-                <span><strong>87</strong> rooms designed</span>
+                <span>
+                  <strong>87</strong> rooms designed
+                </span>
               </div>
               <div className="hidden sm:block w-px h-6 bg-white/30" />
               <div className="flex items-center gap-2">
                 <span className="text-2xl">✓</span>
-                <span><strong>4.9/5</strong> average rating</span>
+                <span>
+                  <strong>4.9/5</strong> average rating
+                </span>
               </div>
               <div className="hidden sm:block w-px h-6 bg-white/30" />
               <div className="flex items-center gap-2">
                 <span className="text-2xl">✓</span>
-                <span>Trusted by enterprise & SMB</span>
+                <span>Trusted by Fortune-500 teams</span>
               </div>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            {/* Left: logo + headline */}
-            <div>
-              <Link
-                href="https://callordut.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mb-6"
-              >
-                <Image
-                  src="/logo.png"
-                  alt="CalLord Unified Technologies"
-                  width={480}
-                  height={270}
-                  priority
-                  className="h-auto w-auto max-w-[320px] md:max-w-[420px]"
-                />
-              </Link>
-
-              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
-                Professional Conference Room Design—Delivered in 3–7 Days
-              </h1>
-              <p className="text-lg md:text-xl text-white/90 mb-6">
-                Vendor-neutral, fixed-price design packages with D-Tools documentation.
-                Start procurement quickly and install with confidence.
-              </p>
-
-              {/* Mini trust badges */}
-              <div className="flex flex-wrap gap-3 mb-8">
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
-                  100% Remote
-                </span>
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
-                  D-Tools Docs
-                </span>
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
-                  Nationwide
-                </span>
-                <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-sm">
-                  Fixed Pricing
-                </span>
-              </div>
-            </div>
-
-            {/* Right: Primary conversion (form) */}
-            <div>
-              <LeadForm />
-              <p className="mt-3 text-center text-white/90 text-sm">
-                Prefer to talk instead?{" "}
-                <a
-                  className="underline font-semibold"
-                  href="https://calendly.com/mark-callordut/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Schedule a call
-                </a>
-                .
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== TESTIMONIALS ===================== */}
-      <section className="section-padding bg-white">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-              What Facility Managers Say
-            </h2>
-            <p className="text-xl text-gray-600">Real results from real projects</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-brand-beige p-6 rounded-lg border-l-4 border-brand-teal">
-              <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
-              <p className="text-gray-700 mb-4 italic">
-                “D-Tools specs let us get 3 competitive bids. We saved over $10k
-                and the install was smooth.”
-              </p>
-              <div className="border-t border-brand-sage pt-4">
-                <p className="font-semibold text-gray-900">Tom R.</p>
-                <p className="text-sm text-gray-600">Facilities Director</p>
-              </div>
-            </div>
-
-            <div className="bg-brand-beige p-6 rounded-lg border-l-4 border-brand-teal">
-              <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
-              <p className="text-gray-700 mb-4 italic">
-                “Got our design in four days. No more HDMI treasure hunts—everything just works.”
-              </p>
-              <div className="border-t border-brand-sage pt-4">
-                <p className="font-semibold text-gray-900">Sarah C.</p>
-                <p className="text-sm text-gray-600">IT Manager</p>
-              </div>
-            </div>
-
-            <div className="bg-brand-beige p-6 rounded-lg border-l-4 border-brand-teal">
-              <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
-              <p className="text-gray-700 mb-4 italic">
-                “Documentation was flawless—our installer said it was the best package he’s seen.”
-              </p>
-              <div className="border-t border-brand-sage pt-4">
-                <p className="font-semibold text-gray-900">David M.</p>
-                <p className="text-sm text-gray-600">Operations VP</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== PRICING (with risk reversal) ===================== */}
-      <section id="pricing" className="section-padding bg-brand-beige">
-        <div className="container-custom">
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Fixed Pricing. No Surprises.
-            </h2>
-            <p className="text-gray-700">
-              Choose the room size and delivery speed that fits your needs. Every package includes
-              D-Tools documentation, signal flow, rack elevations, and cable schedules.
+          {/* Headline */}
+          <div className="max-w-5xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.1] mb-4">
+              Professional Conference Room Design — Delivered in 3–7 Days
+            </h1>
+            <p className="text-lg md:text-xl text-white/90">
+              Complete D-Tools documentation, equipment specifications, signal flow diagrams, and
+              installation guidance. 100% remote delivery. Nationwide.
             </p>
           </div>
 
-          {/* Year-end note / urgency copy (non-dynamic) */}
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-10 max-w-2xl mx-auto">
-            <p className="text-sm text-gray-700">
-              <strong>⚡ Year-End Rush:</strong> Book by Nov 20 to guarantee pre-holiday delivery.
+          {/* Urgency banner */}
+          <div className="mt-6 flex justify-center">
+            <div className="rounded-full bg-red-600/95 px-4 py-2 text-sm font-semibold">
+              ⏰ November slots filling fast — only 3 projects left
+            </div>
+          </div>
+
+          {/* Form */}
+          <div id="lead" className="mt-10 grid md:grid-cols-2 gap-10 items-start">
+            <div className="order-2 md:order-1 text-white/90">
+              <ul className="space-y-3 text-base">
+                <li>• Fixed pricing. No surprises. No equipment sales conflict.</li>
+                <li>• D-Tools Pro package: rack elevations, cable schedules, and as-built docs.</li>
+                <li>• Vendor-neutral specs so you can bid competitively or DIY.</li>
+                <li>• 14-day revision guarantee. Response within 4 business hours.</li>
+              </ul>
+
+              <div className="mt-6 text-white/80 text-sm">
+                Questions now? Call{" "}
+                <a href="tel:+15052261457" className="font-semibold underline">
+                  (505) 226-1457
+                </a>
+                .
+              </div>
+            </div>
+
+            <div className="order-1 md:order-2">
+              <LeadForm />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="section-padding bg-white">
+        <div className="container-custom">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Simple, fixed pricing</h2>
+            <p className="text-gray-600 mt-2">
+              Choose the package that fits your room. Delivery windows are guaranteed.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {/* Essential */}
-            <div className="rounded-2xl bg-white shadow-lg border border-brand-sage p-6 flex flex-col">
-              <h3 className="text-xl font-bold text-gray-900">Essential</h3>
-              <p className="text-sm text-gray-600 mb-4">Small room • 8–12 seats</p>
-              <div className="text-4xl font-extrabold text-gray-900 mb-2">$2,500</div>
-              <p className="text-sm text-gray-600 mb-4">Delivered in ~3 days</p>
+            {[
+              {
+                name: "Essential",
+                price: "$2,500",
+                room: "8–12 people",
+                days: "3-day delivery",
+                items: [
+                  "D-Tools project + PDF set",
+                  "Signal flow diagram",
+                  "Equipment specifications",
+                  "Cable schedule",
+                ],
+              },
+              {
+                name: "Professional",
+                price: "$4,500",
+                room: "12–20 people",
+                days: "5-day delivery",
+                items: [
+                  "Everything in Essential",
+                  "Rack elevation drawings",
+                  "Network / AV patching plan",
+                  "Installer handoff call",
+                ],
+              },
+              {
+                name: "Enterprise",
+                price: "$8,000",
+                room: "20+ people",
+                days: "7-day delivery",
+                items: [
+                  "Everything in Professional",
+                  "Multiple display layouts",
+                  "Redundancy & failover plan",
+                  "Procurement assistance",
+                ],
+              },
+            ].map((t) => (
+              <div key={t.name} className="rounded-2xl border border-brand-sage/50 p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900">{t.name}</h3>
+                <p className="mt-1 text-gray-600">{t.room}</p>
+                <p className="mt-4 text-3xl font-extrabold text-gray-900">{t.price}</p>
+                <p className="text-sm text-gray-600">{t.days}</p>
 
-              <ul className="text-gray-700 text-sm space-y-2 mb-4">
-                <li>• D-Tools project file</li>
-                <li>• Signal flow diagram</li>
-                <li>• Basic rack elevation</li>
-                <li>• Cable schedule</li>
-              </ul>
-
-              {/* Risk reversal badge */}
-              <div className="bg-green-50 border border-green-200 rounded p-3 mb-6 text-center">
-                <p className="text-xs text-green-800">
+                <div className="mt-4 rounded border border-green-200 bg-green-50 p-3 text-center text-xs text-green-800">
                   ✓ 14-day free revisions<br />✓ 100% deposit refund if not satisfied
-                </p>
+                </div>
+
+                <ul className="mt-4 space-y-2 text-gray-700">
+                  {t.items.map((i) => (
+                    <li key={i}>• {i}</li>
+                  ))}
+                </ul>
+
+                <div className="mt-6">
+                  <a
+                    href="#lead"
+                    className="btn-primary inline-flex items-center justify-center rounded-xl bg-brand-teal px-4 py-2 font-semibold text-white hover:opacity-90"
+                  >
+                    Get This Package
+                  </a>
+                </div>
               </div>
+            ))}
+          </div>
 
-              <a
-                href="#lead"
-                className="mt-auto inline-flex justify-center items-center rounded-xl bg-brand-teal px-5 py-3 font-semibold text-white shadow hover:opacity-90 transition"
-              >
-                Get Fixed-Price Quote
-              </a>
-            </div>
-
-            {/* Professional */}
-            <div className="rounded-2xl bg-white shadow-lg border-2 border-brand-teal p-6 flex flex-col">
-              <h3 className="text-xl font-bold text-gray-900">Professional</h3>
-              <p className="text-sm text-gray-600 mb-4">Medium room • 12–20 seats</p>
-              <div className="text-4xl font-extrabold text-gray-900 mb-2">$4,500</div>
-              <p className="text-sm text-gray-600 mb-4">Delivered in ~5 days</p>
-
-              <ul className="text-gray-700 text-sm space-y-2 mb-4">
-                <li>• Everything in Essential</li>
-                <li>• Detailed rack elevations</li>
-                <li>• Equipment schedules (SKU, qty)</li>
-                <li>• Installer notes</li>
-              </ul>
-
-              {/* Risk reversal badge */}
-              <div className="bg-green-50 border border-green-200 rounded p-3 mb-6 text-center">
-                <p className="text-xs text-green-800">
-                  ✓ 14-day free revisions<br />✓ 100% deposit refund if not satisfied
-                </p>
-              </div>
-
-              <a
-                href="#lead"
-                className="mt-auto inline-flex justify-center items-center rounded-xl bg-brand-teal px-5 py-3 font-semibold text-white shadow hover:opacity-90 transition"
-              >
-                Get Fixed-Price Quote
-              </a>
-            </div>
-
-            {/* Enterprise */}
-            <div className="rounded-2xl bg-white shadow-lg border border-brand-sage p-6 flex flex-col">
-              <h3 className="text-xl font-bold text-gray-900">Enterprise</h3>
-              <p className="text-sm text-gray-600 mb-4">Large room • 20+ seats</p>
-              <div className="text-4xl font-extrabold text-gray-900 mb-2">$8,000</div>
-              <p className="text-sm text-gray-600 mb-4">Delivered in ~7 days</p>
-
-              <ul className="text-gray-700 text-sm space-y-2 mb-4">
-                <li>• Everything in Professional</li>
-                <li>• Advanced network considerations</li>
-                <li>• Multi-display/mic arrays</li>
-                <li>• Multi-room option available</li>
-              </ul>
-
-              {/* Risk reversal badge */}
-              <div className="bg-green-50 border border-green-200 rounded p-3 mb-6 text-center">
-                <p className="text-xs text-green-800">
-                  ✓ 14-day free revisions<br />✓ 100% deposit refund if not satisfied
-                </p>
-              </div>
-
-              <a
-                href="#lead"
-                className="mt-auto inline-flex justify-center items-center rounded-xl bg-brand-teal px-5 py-3 font-semibold text-white shadow hover:opacity-90 transition"
-              >
-                Get Fixed-Price Quote
-              </a>
-            </div>
+          <div className="mt-8 mx-auto max-w-2xl bg-yellow-50 border-l-4 border-yellow-400 p-4 text-sm text-gray-700">
+            <strong>⚡ Year-end rush:</strong> Book by Nov 20 to guarantee pre-holiday delivery.
           </div>
         </div>
       </section>
 
-      {/* ===================== OBJECTIONS (embedded QA) ===================== */}
-      <section className="section-padding bg-white border-y border-brand-sage/60">
+      {/* Testimonials (generic placeholders until replaced) */}
+      <section className="section-padding bg-brand-beige">
+        <div className="container-custom">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">What Facility Managers Say</h2>
+            <p className="text-xl text-gray-600">Real results from real projects</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                quote:
+                  "We received a complete D-Tools package in 4 days and saved $11,000 by competitive bidding.",
+                name: "Tom Richardson",
+                title: "Facilities Director",
+                org: "Consulting firm, Denver",
+              },
+              {
+                quote:
+                  "Everything just worked. No more HDMI treasure hunts—best $4,500 we’ve spent on AV.",
+                name: "Sarah Chen",
+                title: "IT Manager",
+                org: "Tech company, Austin",
+              },
+              {
+                quote:
+                  "Documentation was flawless—our installer said it was the best he’s seen. On time and on budget.",
+                name: "David Martinez",
+                title: "Operations VP",
+                org: "Manufacturing, Phoenix",
+              },
+            ].map((t) => (
+              <div key={t.name} className="bg-white p-6 rounded-lg border-l-4 border-brand-teal shadow-sm">
+                <div className="text-brand-teal mb-3 text-2xl">★★★★★</div>
+                <p className="text-gray-700 mb-4 italic">“{t.quote}”</p>
+                <div className="border-t border-brand-sage pt-4">
+                  <p className="font-semibold text-gray-900">{t.name}</p>
+                  <p className="text-sm text-gray-600">{t.title}</p>
+                  <p className="text-sm text-gray-600">{t.org}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Objections / common questions */}
+      <section className="section-padding bg-white border-y border-brand-sage/40">
         <div className="container-custom">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
             Common Questions, Answered
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-brand-teal text-white flex items-center justify-center font-bold">?</div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  What if my installer can’t read D-Tools?
-                </h3>
-                <p className="text-gray-600">
-                  D-Tools is the industry standard—any professional installer knows it.
-                  We also include plain-English cable schedules and signal flow diagrams.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-brand-teal text-white flex items-center justify-center font-bold">?</div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  Can this be done 100% remotely?
-                </h3>
-                <p className="text-gray-600">
-                  Yes—87 rooms designed without a single site visit. We use video calls,
-                  floor plans, and photos. You avoid $2k–$5k in travel fees.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-brand-teal text-white flex items-center justify-center font-bold">?</div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  What if I need changes after delivery?
-                </h3>
-                <p className="text-gray-600">
-                  Minor revisions (equipment swaps, cable tweaks) are free for 14 days.
-                  Major scope changes are quoted separately.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-brand-teal text-white flex items-center justify-center font-bold">?</div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  How do I know this will work?
-                </h3>
-                <p className="text-gray-600">
-                  100% on-time delivery record. If your installer flags a design issue,
-                  we revise it free or refund your deposit.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== PORTFOLIO / SAMPLE WORK ===================== */}
-      <section className="section-padding bg-brand-beige">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-              See What You Get
-            </h2>
-            <p className="text-xl text-gray-600">Sample deliverables from real projects</p>
+            <Objection
+              q='“Can this really be done remotely?”'
+              a="Yes—87 rooms designed without a single site visit. We use video calls, floor plans, and photos. Saves $2,000–$5,000 in travel vs. on-site consultants."
+            />
+            <Objection
+              q='“What if my installer can’t read D-Tools?”'
+              a="D-Tools is industry standard. We also include plain-English cable schedules and signal flow diagrams that any professional can follow."
+            />
+            <Objection
+              q='“What if I need changes?”'
+              a="Minor revisions are free for 14 days. Major scope changes are quoted separately. Our goal: you’re 100% satisfied before you buy equipment."
+            />
+            <Objection
+              q='“How do I know this will work?”'
+              a="100% on-time delivery record. If your installer raises a valid design concern, we revise free or refund your deposit."
+            />
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">
-                D-Tools – Signal Flow (placeholder)
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-gray-900 mb-2">Signal Flow Diagram</h3>
-                <p className="text-sm text-gray-600">
-                  Every connection documented—no guesswork for your installer.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">
-                Rack Elevation (placeholder)
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-gray-900 mb-2">Rack Elevation</h3>
-                <p className="text-sm text-gray-600">
-                  Exact equipment mounting and spacing—builds right the first time.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="bg-gray-200 h-48 flex items-center justify-center text-gray-500">
-                Cable Schedule (placeholder)
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-gray-900 mb-2">Cable Schedule</h3>
-                <p className="text-sm text-gray-600">
-                  Every cable listed with source, destination, and length.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-8">
-            <a
-              href="/sample-design-package.pdf"
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-teal px-6 py-3 font-semibold text-white shadow hover:opacity-90 transition"
-              target="_blank"
-            >
-              📄 Download Sample Design Package
+          <div className="text-center mt-10">
+            <a href="#lead" className="rounded-xl bg-brand-teal px-5 py-3 font-semibold text-white hover:opacity-90">
+              Get Your Fixed-Price Quote
             </a>
-            <p className="text-xs text-gray-600 mt-2">
-              (You can replace this with an anonymized PDF when ready.)
-            </p>
           </div>
         </div>
       </section>
 
-      {/* ===================== FINAL CTA / ANCHOR FOR FORM BUTTONS ===================== */}
-      <section id="lead" className="section-padding bg-white">
-        <div className="container-custom max-w-3xl">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Get Your Fixed-Price Quote</h2>
-            <p className="text-gray-700 mt-2">
-              Tell us about your room and timeline. We’ll reply within 4 business hours.
-            </p>
-          </div>
-          <LeadForm />
+      {/* NOTE: The “See What You Get” portfolio section is intentionally hidden for now. */}
+      {false && (
+        <section className="section-padding bg-brand-beige">{/* portfolio content would be here */}</section>
+      )}
+
+      {/* Footer */}
+      <footer className="bg-white">
+        <div className="container-custom py-8 text-sm text-gray-600">
+          © {new Date().getFullYear()} CalLord Unified Technologies • Albuquerque, NM •{" "}
+          <a href="tel:+15052261457" className="text-brand-teal font-semibold">
+            (505) 226-1457
+          </a>
         </div>
-      </section>
+      </footer>
     </main>
+  );
+}
+
+function Objection({ q, a }) {
+  return (
+    <div className="flex gap-4">
+      <div className="flex-shrink-0">
+        <div className="w-12 h-12 bg-brand-teal rounded-full flex items-center justify-center text-white font-bold text-xl">
+          ?
+        </div>
+      </div>
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-2">{q}</h3>
+        <p className="text-gray-600">{a}</p>
+      </div>
+    </div>
   );
 }
