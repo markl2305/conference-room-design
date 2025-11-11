@@ -13,10 +13,10 @@ module.exports = {
           sage: "#96B1AD",
           beige: "#F1E7D8",
           "teal-dark": "#1f7e77",
-          "teal-light": "#32b5ab",
-        },
-      },
-    },
+          "teal-light": "#32b5ab"
+        }
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 };
