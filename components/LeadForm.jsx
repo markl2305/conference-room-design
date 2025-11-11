@@ -1,124 +1,142 @@
 "use client";
-
 import { useState } from "react";
 
 export default function LeadForm() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
 
-  async function submit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
-    setError("");
     setSending(true);
+    setError("");
+    setDone(false);
 
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+    const form = e.currentTarget;
+    const payload = Object.fromEntries(new FormData(form).entries());
 
     try {
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
-      // if server returns JSON with error, show it
-      let payload = {};
-      try {
-        payload = await res.json();
-      } catch {
-        /* ignore */
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        setError(
+          data?.message ||
+            "Sorry—something went wrong sending your request. Please try again."
+        );
+        setSending(false);
+        return;
       }
 
-      if (!res.ok) {
-        throw new Error(payload?.error || "Request failed.");
-      }
-
-      // GA4 (best-effort)
+      // GA4 event (fires only on success)
       if (typeof window !== "undefined" && typeof window.gtag !== "undefined") {
         window.gtag("event", "lead_form_submit", {
           event_category: "Lead",
-          event_label: "Hero Lead Form",
+          event_label: "Hero Form",
           value: 1,
           currency: "USD",
         });
       }
 
-      window.location.href = "/thanks";
+      setDone(true);
+      setSending(false);
+      form.reset();
     } catch (err) {
       setError(
-        err?.message ||
-          "Sorry—something went wrong sending your request. Please try again."
+        "Network error submitting the form. Please check your connection and try again."
       );
       setSending(false);
     }
   }
 
-  const baseInput =
-    "mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 " +
-    "text-gray-900 placeholder-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal";
+  const inputBase =
+    "mt-1 w-full rounded-xl border border-bronze-300 bg-white text-gray-900 placeholder-gray-500 px-4 py-3 focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/30 outline-none";
+  const selectBase =
+    "mt-1 w-full rounded-xl border border-bronze-300 bg-white text-gray-900 px-4 py-3 focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/30 outline-none";
 
   return (
-    <form onSubmit={submit} className="grid gap-4 bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl">
+    <form onSubmit={onSubmit} className="space-y-4" aria-live="polite">
       <div>
-        <label className="text-sm font-medium text-gray-900">Your name</label>
-        <input name="name" required placeholder="Jane Smith" className={baseInput} />
+        <label className="text-sm font-medium text-navy-900">Your name</label>
+        <input name="name" required className={inputBase} />
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-900">Work email</label>
-        <input name="email" type="email" required placeholder="jane@company.com" className={baseInput} />
+        <label className="text-sm font-medium text-navy-900">Work email</label>
+        <input name="email" type="email" required className={inputBase} />
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-900">Company (optional)</label>
-        <input name="company" placeholder="Acme Corp" className={baseInput} />
+        <label className="text-sm font-medium text-navy-900">
+          Company (optional)
+        </label>
+        <input name="company" className={inputBase} />
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-900">Room size</label>
-        <select name="room_size" required className={baseInput}>
-          <option value="">Select room size</option>
-          <option value="8-12">8–12 people (Essential – $2,500)</option>
-          <option value="12-20">12–20 people (Professional – $4,500)</option>
-          <option value="20+">20+ people (Enterprise – $8,000)</option>
-          <option value="multiple">Multiple rooms</option>
-          <option value="unsure">Not sure yet</option>
+        <label className="text-sm font-medium text-navy-900">Room size</label>
+        <select name="roomSize" required className={selectBase} defaultValue="">
+          <option value="" disabled>
+            Select room size
+          </option>
+          <option value="8–12 (Essential — $2,500)">
+            8–12 people (Essential — $2,500)
+          </option>
+          <option value="12–20 (Professional — $4,500)">
+            12–20 people (Professional — $4,500)
+          </option>
+          <option value="20+ (Enterprise — $8,000)">
+            20+ people (Enterprise — $8,000)
+          </option>
+          <option value="Multiple rooms">Multiple rooms</option>
+          <option value="Not sure yet">Not sure yet</option>
         </select>
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-900">Timeline</label>
-        <select name="timeline" required className={baseInput}>
-          <option value="">When do you need this?</option>
-          <option value="asap">ASAP (within 2 weeks)</option>
-          <option value="1-month">Within 1 month</option>
-          <option value="1-3-months">1–3 months</option>
-          <option value="planning">Just planning ahead</option>
+        <label className="text-sm font-medium text-navy-900">Timeline</label>
+        <select name="timeline" required className={selectBase} defaultValue="">
+          <option value="" disabled>
+            When do you need this?
+          </option>
+          <option value="ASAP (within 2 weeks)">ASAP (within 2 weeks)</option>
+          <option value="Within 1 month">Within 1 month</option>
+          <option value="1–3 months">1–3 months</option>
+          <option value="Planning ahead">Just planning ahead</option>
         </select>
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-900">Notes (optional)</label>
+        <label className="text-sm font-medium text-navy-900">
+          Notes (optional)
+        </label>
         <textarea
           name="notes"
-          rows={4}
-          placeholder="Room dimensions, displays, mics, special constraints…"
-          className={baseInput}
+          rows={5}
+          className={inputBase}
+          placeholder="Anything we should know? Current gear, room dimensions, must-haves…"
         />
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
+      {done && (
+        <p className="text-sm text-green-700">
+          Thanks! We received your request and will reply within 4 business
+          hours.
+        </p>
+      )}
 
       <button
-        type="submit"
         disabled={sending}
-        className="rounded-xl bg-brand-teal px-6 py-3 font-semibold text-white shadow-lg hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-xl bg-brand-teal px-6 py-4 font-semibold text-white shadow-lg transition-colors hover:bg-brand-sage-dark disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {sending ? "Sending…" : "Get My Fixed-Price Quote"}
+        {sending ? "Submitting…" : "Get My Fixed-Price Quote"}
       </button>
-
-      <p className="text-xs text-gray-600 text-center">
-        You’ll hear back within 4 business hours. No obligation.
-      </p>
     </form>
   );
 }
