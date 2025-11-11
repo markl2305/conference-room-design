@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-export const runtime = "nodejs"; // ✅ Resend SDK needs Node
+export const runtime = "nodejs"; // ✅ required for Resend SDK
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -21,7 +21,6 @@ export async function POST(req) {
       notes = ""
     } = body || {};
 
-    // Basic validation
     if (!firstName || !lastName || !email) {
       return NextResponse.json(
         { ok: false, error: "Missing required fields." },
@@ -31,7 +30,6 @@ export async function POST(req) {
 
     const fullName = `${firstName} ${lastName}`.trim();
 
-    // Internal notification HTML
     const internalHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
         <h2>New Lead: ${roomSize || "Unspecified room size"}</h2>
@@ -45,50 +43,10 @@ export async function POST(req) {
       </div>
     `;
 
-    // Prospect autoresponder HTML
     const prospectHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
         <h2>Thanks, ${firstName} — we’re on it.</h2>
         <p>We’ll send a fixed-price quote within <strong>4 hours</strong> (often sooner).</p>
         <ul>
           <li><strong>Room size:</strong> ${roomSize || "—"}</li>
-          <li><strong>Timeline:</strong> ${timeline || "—"}</li>
-          <li><strong>Company:</strong> ${company || "—"}</li>
-        </ul>
-        <p>If anything changes, reply to this email or call (505) 315-7773.</p>
-        <p style="margin-top:16px">— Mark at CalLord Unified Technologies</p>
-      </div>
-    `;
-
-    // 1) Must-succeed internal email
-    const { data, error: internalError } = await resend.emails.send({
-      from: "CalLord UT Leads <leads@callordut.com>", // must be a Verified sender/domain in Resend
-      to: ["sales@callordut.com"],
-      reply_to: email, // ✅ correct field name for Resend
-      subject: `New Lead: ${roomSize || "Room"} • ${fullName}`,
-      html: internalHtml,
-    });
-
-    if (internalError) {
-      console.error("Internal email failed:", internalError);
-      return NextResponse.json({ ok: false, error: internalError.message }, { status: 502 });
-    }
-
-    // 2) Best-effort autoresponder (don’t fail UI if this one errors)
-    const { error: prospectError } = await resend.emails.send({
-      from: "CalLord UT <no-reply@callordut.com>",
-      to: [email],
-      subject: "We received your conference room design request",
-      html: prospectHtml,
-    });
-    if (prospectError) console.warn("Autoresponder failed:", prospectError);
-
-    return NextResponse.json({ ok: true, id: data?.id }, { status: 200 });
-  } catch (err) {
-    console.error("Contact API error:", err);
-    return NextResponse.json(
-      { ok: false, error: err?.message || "Server error" },
-      { status: 500 }
-    );
-  }
-}
+          <li><strong>Timeline:</strong> ${timel
