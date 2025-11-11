@@ -1,15 +1,11 @@
-/* app/globals.css */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Base */
 @layer base {
   html { scroll-behavior: smooth; }
-
-  /* Avoid @apply here to sidestep the v4 parser error */
-  body {
-    color: #1f2937; /* same as text-gray-800 */
-    background-color: #ffffff;
-  }
+  body { @apply text-gray-800 bg-white; }
 }
 
 /* Components */
@@ -24,13 +20,4 @@
 
   .section-padding { @apply py-16 md:py-24; }
   .container-custom { @apply max-w-6xl mx-auto px-6 md:px-8; }
-}
-
-/* Theme extensions for Tailwind v4 */
-@theme {
-  --color-brand-teal: #279A92;
-  --color-brand-teal-dark: #1f7e77;
-  --color-brand-teal-light: #32b5ab;
-  --color-brand-sage: #96B1AD;
-  --color-brand-beige: #F1E7D8;
 }
