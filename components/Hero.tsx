@@ -32,7 +32,7 @@ const FALLBACK =
 </svg>`);
 
 export default function Hero() {
-  const [src, setSrc] = useState("/images/hero-room.jpg");
+  const [src, setSrc] = useState("/images/hero-room.png");
 
   return (
     <section className="bg-teal-700 text-teal-50">
