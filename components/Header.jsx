@@ -1,4 +1,4 @@
-// components/Header.tsx
+// components/Header.jsx
 import Link from "next/link";
 
 export default function Header() {
@@ -6,9 +6,9 @@ export default function Header() {
     <header className="bg-teal-700/90 text-white backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="h-14 flex items-center justify-between gap-6">
-          {/* Logo (sized and not hugging the edge) */}
+          {/* Logo */}
           <Link href="/" className="inline-flex items-center" aria-label="CalLord Unified Technologies">
-            {/* Put your real file in /public/logo-cLordut.svg (or adjust src) */}
+            {/* Put your real file in /public/logo-cLordut.svg (no spaces in filename) */}
             <img
               src="/logo-cLordut.svg"
               alt="CalLord Unified Technologies"
@@ -16,7 +16,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* Right actions (kept off the right margin by the container) */}
+          {/* CTA (kept off the right edge by the container) */}
           <div className="flex items-center gap-3">
             <Link
               href="#quote"
