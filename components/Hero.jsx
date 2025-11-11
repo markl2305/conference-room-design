@@ -1,4 +1,4 @@
-// components/Hero.tsx
+// components/Hero.jsx
 "use client";
 
 import { useState } from "react";
@@ -53,7 +53,7 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* Bullets — larger, readable, pulled off the edge */}
+            {/* Bullets */}
             <ul className="mt-6 space-y-3 text-base leading-7 text-teal-50/95">
               {bullets.map((t) => (
                 <li key={t} className="flex gap-3 pl-1">
@@ -63,7 +63,7 @@ export default function Hero() {
               ))}
             </ul>
 
-            {/* Media block under bullets (fills empty space) */}
+            {/* Media block under bullets */}
             <div className="mt-8">
               <figure className="rounded-xl overflow-hidden shadow-lg shadow-teal-950/20 ring-1 ring-white/10">
                 <img
@@ -82,36 +82,14 @@ export default function Hero() {
 
           {/* Right column (form) */}
           <div className="lg:col-span-5">
-            <div
-              id="quote"
-              className="rounded-xl bg-white/95 p-5 sm:p-6 shadow-xl ring-1 ring-teal-900/10"
-            >
+            <div id="quote" className="rounded-xl bg-white/95 p-5 sm:p-6 shadow-xl ring-1 ring-teal-900/10">
               <form className="grid grid-cols-1 gap-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    placeholder="First name*"
-                    className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Last name*"
-                    className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50"
-                  />
+                  <input type="text" placeholder="First name*" className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50" />
+                  <input type="text" placeholder="Last name*" className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50" />
                 </div>
-
-                <input
-                  type="email"
-                  placeholder="Email*"
-                  className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Company"
-                  className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50"
-                />
-
+                <input type="email" placeholder="Email*" className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50" />
+                <input type="text" placeholder="Company" className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50" />
                 <div className="grid grid-cols-2 gap-3">
                   <select className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950">
                     <option>Room size</option>
@@ -126,16 +104,8 @@ export default function Hero() {
                     <option>Flexible</option>
                   </select>
                 </div>
-
-                <textarea
-                  placeholder="Anything else we should know?"
-                  className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50 min-h-[96px]"
-                />
-
-                <button
-                  type="submit"
-                  className="mt-2 w-full rounded-lg bg-teal-700 py-2.5 text-white font-semibold hover:bg-teal-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
-                >
+                <textarea placeholder="Anything else we should know?" className="rounded-md border border-teal-900/10 px-3 py-2 text-sm text-teal-950 placeholder-teal-800/50 min-h-[96px]" />
+                <button type="submit" className="mt-2 w-full rounded-lg bg-teal-700 py-2.5 text-white font-semibold hover:bg-teal-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">
                   Get my fixed-price quote
                 </button>
               </form>
