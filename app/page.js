@@ -12,15 +12,23 @@ export default function Home() {
               className="flex items-center"
               aria-label="CalLord Unified Technologies"
             >
-              {/* Use your 320×180 PNG; scale via CSS for crisp display */}
-              <Image
-                src="/logo.png"
-                alt="CalLord Unified Technologies"
-                width={320}
-                height={180}
-                priority
-                className="h-10 w-auto md:h-12"
-              />
+           <Link href="https://callordut.com" prefetch={false} aria-label="CalLordUT home">
+  <Image
+    src="/logo.png"          // keep your file in /public/logo.png
+    alt="CalLord Unified Technologies"
+    priority
+    width={1280}             // intrinsic source size (keeps it crisp)
+    height={505}             // keep the file’s aspect ratio; any numbers are fine as long as ratio matches
+    className="h-16 md:h-20 lg:h-24 xl:h-28 w-auto"  // controls on-screen size responsively
+    sizes="(max-width: 640px) 64px,
+           (max-width: 768px) 80px,
+           (max-width: 1024px) 96px,
+           (max-width: 1280px) 112px,
+           128px"
+  />
+</Link>
+
+              
             </a>
 
             <a
