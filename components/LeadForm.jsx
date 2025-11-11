@@ -32,7 +32,6 @@ export default function LeadForm() {
       });
 
       const json = await res.json().catch(() => ({}));
-
       if (!res.ok || !json?.ok) {
         throw new Error(json?.error || `Request failed: ${res.status}`);
       }
@@ -46,15 +45,20 @@ export default function LeadForm() {
     }
   }
 
+  const inputCls =
+    "border rounded p-2 bg-white text-slate-900 placeholder-slate-500 " +
+    "focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 " +
+    "dark:bg-white dark:text-slate-900";
+
   return (
-    <form onSubmit={onSubmit} className="grid gap-3 max-w-xl">
+    <form onSubmit={onSubmit} className="grid gap-3 max-w-xl text-slate-900 dark:text-slate-100">
       <div className="grid grid-cols-2 gap-3">
-        <input name="firstName" placeholder="First name*" required className="border rounded p-2" />
-        <input name="lastName" placeholder="Last name*" required className="border rounded p-2" />
+        <input name="firstName" placeholder="First name*" required className={inputCls} />
+        <input name="lastName" placeholder="Last name*" required className={inputCls} />
       </div>
-      <input type="email" name="email" placeholder="Email*" required className="border rounded p-2" />
-      <input name="company" placeholder="Company" className="border rounded p-2" />
-      <select name="roomSize" className="border rounded p-2">
+      <input type="email" name="email" placeholder="Email*" required className={inputCls} />
+      <input name="company" placeholder="Company" className={inputCls} />
+      <select name="roomSize" className={inputCls}>
         <option value="">Room size</option>
         <option>Huddle (2–4)</option>
         <option>Small (4–6)</option>
@@ -62,14 +66,19 @@ export default function LeadForm() {
         <option>Large (10–20)</option>
         <option>Boardroom / Training</option>
       </select>
-      <select name="timeline" className="border rounded p-2">
+      <select name="timeline" className={inputCls}>
         <option value="">Timeline</option>
         <option>ASAP (0–2 weeks)</option>
         <option>Soon (2–4 weeks)</option>
         <option>Planning (1–3 months)</option>
         <option>Exploring (3+ months)</option>
       </select>
-      <textarea name="notes" placeholder="Anything else we should know?" rows={4} className="border rounded p-2" />
+      <textarea
+        name="notes"
+        rows={4}
+        placeholder="Anything else we should know?"
+        className={inputCls}
+      />
       <button
         type="submit"
         disabled={loading}
@@ -79,7 +88,13 @@ export default function LeadForm() {
       </button>
 
       {msg && (
-        <p className={msg.type === "success" ? "text-green-700" : "text-red-700"}>
+        <p
+          className={
+            msg.type === "success"
+              ? "text-green-700 dark:text-green-400"
+              : "text-red-700 dark:text-red-400"
+          }
+        >
           {msg.text}
         </p>
       )}
