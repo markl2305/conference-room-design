@@ -20,12 +20,19 @@ export default function LeadForm() {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(msg || "Request failed");
+      // if server returns JSON with error, show it
+      let payload = {};
+      try {
+        payload = await res.json();
+      } catch {
+        /* ignore */
       }
 
-      // Optional: GA4 event if gtag exists
+      if (!res.ok) {
+        throw new Error(payload?.error || "Request failed.");
+      }
+
+      // GA4 (best-effort)
       if (typeof window !== "undefined" && typeof window.gtag !== "undefined") {
         window.gtag("event", "lead_form_submit", {
           event_category: "Lead",
@@ -35,61 +42,40 @@ export default function LeadForm() {
         });
       }
 
-      // Redirect to simple thanks page (safe even if not created yet)
       window.location.href = "/thanks";
     } catch (err) {
-      setError("Sorry—something went wrong sending your request. Please try again.");
+      setError(
+        err?.message ||
+          "Sorry—something went wrong sending your request. Please try again."
+      );
       setSending(false);
     }
   }
 
+  const baseInput =
+    "mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 " +
+    "text-gray-900 placeholder-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal";
+
   return (
     <form onSubmit={submit} className="grid gap-4 bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl">
-      {/* Name */}
       <div>
         <label className="text-sm font-medium text-gray-900">Your name</label>
-        <input
-          name="name"
-          required
-          placeholder="Jane Smith"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2
-                     text-gray-900 placeholder-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal"
-        />
+        <input name="name" required placeholder="Jane Smith" className={baseInput} />
       </div>
 
-      {/* Email */}
       <div>
         <label className="text-sm font-medium text-gray-900">Work email</label>
-        <input
-          name="email"
-          type="email"
-          required
-          placeholder="jane@company.com"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2
-                     text-gray-900 placeholder-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal"
-        />
+        <input name="email" type="email" required placeholder="jane@company.com" className={baseInput} />
       </div>
 
-      {/* Company */}
       <div>
         <label className="text-sm font-medium text-gray-900">Company (optional)</label>
-        <input
-          name="company"
-          placeholder="Acme Corp"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2
-                     text-gray-900 placeholder-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal"
-        />
+        <input name="company" placeholder="Acme Corp" className={baseInput} />
       </div>
 
-      {/* Room Size */}
       <div>
         <label className="text-sm font-medium text-gray-900">Room size</label>
-        <select
-          name="room_size"
-          required
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2
-                     text-gray-900 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal"
-        >
+        <select name="room_size" required className={baseInput}>
           <option value="">Select room size</option>
           <option value="8-12">8–12 people (Essential – $2,500)</option>
           <option value="12-20">12–20 people (Professional – $4,500)</option>
@@ -99,15 +85,9 @@ export default function LeadForm() {
         </select>
       </div>
 
-      {/* Timeline */}
       <div>
         <label className="text-sm font-medium text-gray-900">Timeline</label>
-        <select
-          name="timeline"
-          required
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2
-                     text-gray-900 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal"
-        >
+        <select name="timeline" required className={baseInput}>
           <option value="">When do you need this?</option>
           <option value="asap">ASAP (within 2 weeks)</option>
           <option value="1-month">Within 1 month</option>
@@ -116,27 +96,22 @@ export default function LeadForm() {
         </select>
       </div>
 
-      {/* Notes */}
       <div>
         <label className="text-sm font-medium text-gray-900">Notes (optional)</label>
         <textarea
           name="notes"
           rows={4}
-          placeholder="Share any context (room dimensions, displays, microphones, special constraints)…"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2
-                     text-gray-900 placeholder-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal"
+          placeholder="Room dimensions, displays, mics, special constraints…"
+          className={baseInput}
         />
       </div>
 
-      {/* Error */}
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={sending}
-        className="rounded-xl bg-brand-teal px-6 py-3 font-semibold text-white shadow-lg
-                   hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="rounded-xl bg-brand-teal px-6 py-3 font-semibold text-white shadow-lg hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {sending ? "Sending…" : "Get My Fixed-Price Quote"}
       </button>
