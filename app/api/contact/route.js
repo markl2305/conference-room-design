@@ -49,4 +49,43 @@ export async function POST(req) {
         <p>We’ll send a fixed-price quote within <strong>4 hours</strong> (often sooner).</p>
         <ul>
           <li><strong>Room size:</strong> ${roomSize || "—"}</li>
-          <li><strong>Timeline:</strong> ${timel
+          <li><strong>Timeline:</strong> ${timeline || "—"}</li>
+          <li><strong>Company:</strong> ${company || "—"}</li>
+        </ul>
+        <p>If anything changes, reply to this email or call (505) 315-7773.</p>
+        <p style="margin-top:16px">— Mark at CalLord Unified Technologies</p>
+      </div>
+    `;
+
+    // 1) Internal email (must succeed)
+    const { data, error: internalError } = await resend.emails.send({
+      from: "CalLord UT Leads <leads@design.callordut.com>", // ✅ verified subdomain
+      to: ["sales@callordut.com"],
+      reply_to: email,
+      subject: `New Lead: ${roomSize || "Room"} • ${fullName}`,
+      html: internalHtml,
+    });
+
+    if (internalError) {
+      console.error("Internal email failed:", internalError);
+      return NextResponse.json({ ok: false, error: internalError.message }, { status: 502 });
+    }
+
+    // 2) Prospect autoresponder (best-effort)
+    const { error: prospectError } = await resend.emails.send({
+      from: "CalLord UT <no-reply@design.callordut.com>", // ✅ verified subdomain
+      to: [email],
+      subject: "We received your conference room design request",
+      html: prospectHtml,
+    });
+    if (prospectError) console.warn("Autoresponder failed:", prospectError);
+
+    return NextResponse.json({ ok: true, id: data?.id }, { status: 200 });
+  } catch (err) {
+    console.error("Contact API error:", err);
+    return NextResponse.json(
+      { ok: false, error: err?.message || "Server error" },
+      { status: 500 }
+    );
+  }
+}
