@@ -8,12 +8,12 @@ export default function Home() {
         <div className="container-custom py-3">
           <div className="flex justify-between items-center">
             <a href="/" className="flex items-center gap-3">
-              {/* Drop your file at /public/logo.svg (or change src) */}
+              {/* Drop your file at /public/logo.png (or change src) */}
               <Image
-                src="/logo.svg"
+                src="/logo.png"
                 alt="CalLord Unified Technologies"
-                width={36}
-                height={36}
+                width={320}
+                height={180}
                 priority
               />
               <span className="text-xl md:text-2xl font-bold">
