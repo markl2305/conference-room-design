@@ -13,7 +13,6 @@ export async function POST(req) {
       notes = "",
     } = body || {};
 
-    // Basic required field checks
     if (!name || !email || !roomSize || !timeline) {
       return new Response(
         JSON.stringify({ ok: false, message: "Missing required fields." }),
@@ -21,14 +20,27 @@ export async function POST(req) {
       );
     }
 
-    // Resend client
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const toAddress =
-      process.env.LEAD_INBOX_EMAIL || "leads@callordut.com"; // customize as you like
-    const fromAddress =
-      process.env.LEAD_FROM_EMAIL || "CalLord <leads@mail.callordut.com>";
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      // Allow testing without blocking the UI
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          message:
+            "Email service not configured (RESEND_API_KEY missing). Add it in Vercel → Settings → Environment Variables.",
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
-    // Email to you
+    const resend = new Resend(apiKey);
+
+    // Use your verified from address when ready, otherwise fallback works for testing
+    const fromAddress =
+      process.env.LEAD_FROM_EMAIL || "CalLord <onboarding@resend.dev>";
+    const toAddress =
+      process.env.LEAD_INBOX_EMAIL || "mark@callordut.com";
+
     const subject = `New Room Design Lead — ${name} (${roomSize})`;
     const html = `
       <h2>New Lead</h2>
@@ -40,15 +52,27 @@ export async function POST(req) {
       <p><strong>Notes:</strong><br/>${(notes || "").replace(/\n/g, "<br/>")}</p>
     `;
 
-    await resend.emails.send({
+    const sendResult = await resend.emails.send({
       from: fromAddress,
       to: toAddress,
       subject,
       html,
-      replyTo: email,
+      reply_to: email,
     });
 
-    // Optional: simple confirmation to the submitter (can disable if you want)
+    // Resend returns { id, ... } on success
+    if (!sendResult || !sendResult.id) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          message:
+            "Email could not be sent. If you just verified the domain, try again in a minute.",
+        }),
+        { status: 502, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Optional confirmation to submitter; enable via env
     if (process.env.LEAD_SEND_CONFIRMATION === "true") {
       await resend.emails.send({
         from: fromAddress,
@@ -69,7 +93,11 @@ export async function POST(req) {
   } catch (err) {
     console.error("Lead API error:", err);
     return new Response(
-      JSON.stringify({ ok: false, message: "Server error." }),
+      JSON.stringify({
+        ok: false,
+        message:
+          "Server error while sending your request. Please try again shortly.",
+      }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
