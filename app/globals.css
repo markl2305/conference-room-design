@@ -1,23 +1,36 @@
+/* app/globals.css */
+
+/* If you use Tailwind, keep these at top */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base */
-@layer base {
-  html { scroll-behavior: smooth; }
-  body { @apply text-gray-800 bg-white; }
+/* Base colors to avoid white-on-white text issues */
+html, body {
+  background: #ffffff;
+  color: #0f172a; /* slate-900 */
 }
 
-/* Components */
-@layer components {
-  .btn-primary {
-    @apply bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center shadow-md hover:shadow-lg;
-  }
+/* Ensure form controls render dark text even in dark mode/autofill */
+input,
+textarea,
+select {
+  background-color: #ffffff;
+  color: #0f172a;
+}
 
-  .btn-secondary {
-    @apply bg-white hover:bg-brand-beige text-brand-teal border-2 border-brand-teal font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center;
-  }
+/* Prevent white text on white background during Chrome/Safari autofill */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #0f172a !important;
+  transition: background-color 9999s ease-out 0s;
+}
 
-  .section-padding { @apply py-16 md:py-24; }
-  .container-custom { @apply max-w-6xl mx-auto px-6 md:px-8; }
+/* Buttons */
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
 }
