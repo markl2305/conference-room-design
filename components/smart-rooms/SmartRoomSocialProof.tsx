@@ -29,17 +29,6 @@ export default function SmartRoomSocialProof() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {["Firm Logo", "Firm Logo", "Firm Logo", "Firm Logo"].map((label, idx) => (
-            <div
-              key={`${label}-${idx}`}
-              className="h-16 rounded-xl border border-gray-300 bg-white/60 flex items-center justify-center text-sm text-gray-500"
-            >
-              {label} Here
-            </div>
-          ))}
-        </div>
-
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((item) => (
             <div key={item.role} className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
