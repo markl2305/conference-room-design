@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { gtagLeadSubmit } from "@/lib/gtag";
 import CTAButton from "../ui/CTAButton";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -124,6 +125,8 @@ export default function SmartRoomConsultForm() {
       if (typeof window !== "undefined" && "dataLayer" in window) {
         (window as any).dataLayer.push({ event: "smart_room_consult_submit" });
       }
+
+      gtagLeadSubmit("design_callordut_main_form");
 
       setStatus("success");
     } catch (err: any) {
