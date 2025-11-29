@@ -65,6 +65,17 @@ export async function POST(req: Request) {
       pageUrl = "",
     } = body;
 
+    if (!process.env.RESEND_API_KEY) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Email service not configured (RESEND_API_KEY missing). Please add your Resend API key.",
+        },
+        { status: 500 }
+      );
+    }
+
     const subjectPrefix = type === "audit" ? "AUDIT" : "CONSULT";
     const interestsLine = interests.length ? interests.join(", ") : "Not specified";
 
@@ -102,9 +113,12 @@ export async function POST(req: Request) {
       </div>
     `;
 
+    const internalTo =
+      process.env.SMART_ROOM_INBOX || process.env.LEAD_INBOX_EMAIL || "mark@mail.callordut.com";
+
     const internal = await resend.emails.send({
       from: "CalLord UT Leads <leads@design.callordut.com>",
-      to: ["sales@callordut.com"],
+      to: Array.isArray(internalTo) ? internalTo : [internalTo],
       replyTo: email,
       subject: `New Smart Room ${subjectPrefix} lead – ${firmName}`,
       html: internalHtml,
