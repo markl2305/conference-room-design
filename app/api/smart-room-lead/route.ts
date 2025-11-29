@@ -24,6 +24,9 @@ type LeadBody = {
   pageUrl?: string;
 };
 
+const MISSING_ENV_MESSAGE =
+  "Email service not configured. Please add RESEND_API_KEY and try again.";
+
 function validate(body: LeadBody) {
   const errors: string[] = [];
   if (body.type !== "consult" && body.type !== "audit") errors.push("Invalid type.");
@@ -67,11 +70,7 @@ export async function POST(req: Request) {
 
     if (!process.env.RESEND_API_KEY) {
       return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Email service not configured (RESEND_API_KEY missing). Please add your Resend API key.",
-        },
+        { success: false, message: MISSING_ENV_MESSAGE },
         { status: 500 }
       );
     }
@@ -113,27 +112,34 @@ export async function POST(req: Request) {
       </div>
     `;
 
-    const internalTo =
-      process.env.SMART_ROOM_INBOX || process.env.LEAD_INBOX_EMAIL || "mark@mail.callordut.com";
+    const fromAddress = process.env.LEAD_FROM_EMAIL || "mark@mail.callordut.com";
+    const toAddress =
+      process.env.LEAD_TO_EMAIL ||
+      process.env.SMART_ROOM_INBOX ||
+      process.env.LEAD_INBOX_EMAIL ||
+      "mark@mail.callordut.com";
 
     const internal = await resend.emails.send({
-      from: "CalLord UT Leads <leads@design.callordut.com>",
-      to: Array.isArray(internalTo) ? internalTo : [internalTo],
+      from: fromAddress,
+      to: Array.isArray(toAddress) ? toAddress : [toAddress],
       replyTo: email,
       subject: `New Smart Room ${subjectPrefix} lead – ${firmName}`,
       html: internalHtml,
     });
 
     if (internal.error) {
-      console.error("Internal email failed:", internal.error);
+      console.error("Smart room internal email failed:", internal.error);
       return NextResponse.json(
-        { success: false, message: internal.error.message },
+        {
+          success: false,
+          message: "We couldn't send your request right now. Please try again shortly.",
+        },
         { status: 502 }
       );
     }
 
     const confirmation = await resend.emails.send({
-      from: "CalLord UT <sales@callordut.com>",
+      from: fromAddress,
       to: [email],
       subject: `We received your Smart Room ${type === "audit" ? "audit" : "consultation"} request`,
       html: confirmHtml,
