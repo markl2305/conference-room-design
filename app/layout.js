@@ -15,6 +15,10 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Optional: lock to light color scheme so Tailwind dark: styles don't invert inputs */}
         <meta name="color-scheme" content="light" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className="bg-white text-slate-900 antialiased">
         {/* GA4 base tag */}

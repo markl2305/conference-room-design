@@ -1,0 +1,21 @@
+Context for an AI model to understand the current site codebase (`conference-room-design`, Next.js 14 App Router + Tailwind CSS).
+
+Purpose
+- Landing page for CalLord Unified Technologies to sell fixed-price, vendor-neutral conference room design with 3–7 day delivery, national remote service.
+
+Key Pages
+- `app/page.js`: Single-page layout with sections: beige header with logo + call/CTA; teal gradient hero with trust bar, headline, urgency banner, lead form, and hero image; pricing grid for Essential ($2,500, 8–12 ppl, 3-day) / Professional ($4,500, 12–20, 5-day) / Enterprise ($8,000, 20+, 7-day) plus year-end rush note; testimonials (3 cards, 5-star); FAQ/objections grid; footer with phone and city. Primary CTA anchors to the lead form (`#lead`).
+- `app/thanks/page.js`: Simple thank-you screen confirming submission and providing the phone number.
+
+Lead Capture
+- `components/LeadForm.jsx` (client component) renders the hero form: first/last name (required), email (required), company, room size, timeline, notes. On submit, POSTs JSON to `/api/contact` with fields `{source:"hero_lead_form", firstName, lastName, email, company, roomSize, timeline, notes}`. Shows “Sending…” during request and displays success/error text from the response; resets form on success.
+
+Email/API Logic
+- `/api/contact` (Node runtime) uses Resend (`process.env.RESEND_API_KEY`). Validates required fields (firstName, lastName, email). Sends an internal email to `sales@callordut.com` from `leads@design.callordut.com`, including all lead fields and source. Attempts an autoresponder to the prospect from `no-reply@design.callordut.com` with a 4-hour SLA note and call-back number (505-315-7773). Returns `{ok:true,id}` on success; 400 on missing fields; 502 on internal send failure; 500 on other errors.
+- `/api/lead` (older/alternate endpoint) also uses Resend, expects `{name,email,company,roomSize,timeline,notes}` with name/email/roomSize/timeline required. From defaults to `onboarding@resend.dev` unless env vars override. Responds `{ok:true}` on success; otherwise 400/500/502 with a message. Optional confirmation email gated by `LEAD_SEND_CONFIRMATION`.
+
+Styling and Assets
+- Tailwind theme extends brand colors: `brand-teal #279A92` (with dark/light variants), `brand-sage #96B1AD`, `brand-beige #F1E7D8`, plus navy/bronze helpers. Global CSS enforces light backgrounds/text and friendly input autofill. GA4 is loaded via scripts in `app/layout.js` (measurement ID `B9E1PMEW8D`). Hero image referenced at `/images/hero-room.png`; logo at `/logo.png`.
+
+Deployment Notes (from README)
+- Live site: https://design.callordut.com. Deployment: Vercel auto-deploy.
