@@ -1,6 +1,7 @@
 // app/layout.js
 import "./globals.css";
 import Script from "next/script";
+import { GA_MEASUREMENT_ID } from "@/lib/gtag";
 
 export const metadata = {
   title: "Professional Conference Room Design | CalLord Unified Technologies",
@@ -21,20 +22,24 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className="bg-white text-slate-900 antialiased">
-        {/* GA4 base tag */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=B9E1PMEW8D"
-          strategy="afterInteractive"
-        />
-        {/* GA4 config */}
-        <Script id="ga4-config" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'B9E1PMEW8D', { send_page_view: true });
-          `}
-        </Script>
+        {GA_MEASUREMENT_ID ? (
+          <>
+            {/* GA4 base tag */}
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            {/* GA4 config */}
+            <Script id="ga4-config" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: true });
+              `}
+            </Script>
+          </>
+        ) : null}
 
         {children}
       </body>
