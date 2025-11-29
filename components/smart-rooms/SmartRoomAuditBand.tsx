@@ -83,6 +83,13 @@ export default function SmartRoomAuditBand() {
     }
   };
 
+  useEffect(() => {
+    if (status === "success" && typeof window !== "undefined") {
+      // Trigger audit download once upon success
+      window.open("/Smart_Room_Audit_CalLordUT.pdf", "_blank", "noopener,noreferrer");
+    }
+  }, [status]);
+
   return (
     <section className="bg-white" id="smart-room-audit">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
@@ -100,8 +107,16 @@ export default function SmartRoomAuditBand() {
           </div>
           <div>
             {status === "success" ? (
-              <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 text-sm">
-                Your 5-Minute Conference Room Audit is on its way to your inbox. Check your email for next steps.
+              <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 text-sm space-y-2">
+                <p>Your 5-Minute Conference Room Audit is on its way to your inbox.</p>
+                <a
+                  href="/Smart_Room_Audit_CalLordUT.pdf"
+                  className="inline-flex items-center justify-center rounded-lg bg-[#279A92] px-3 py-2 font-semibold text-white hover:bg-[#1f7e77]"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download the Audit PDF
+                </a>
               </div>
             ) : (
               <form className="space-y-3" onSubmit={handleSubmit}>
