@@ -35,8 +35,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-gray-500 flex flex-wrap items-center justify-between gap-3">
           <div>© {new Date().getFullYear()} CalLord Unified Technologies</div>
           <div className="flex items-center gap-4">
-            <a href="tel:+15053157773" className="text-[#279A92] font-semibold">
-              (505) 315-7773
+            <a href="tel:+18666572383" className="text-[#279A92] font-semibold">
+              (866) 657-2383
             </a>
             <a href="mailto:sales@callordut.com" className="text-[#279A92] font-semibold">
               sales@callordut.com

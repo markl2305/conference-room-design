@@ -16,7 +16,7 @@ export default function SmartRoomHeader() {
             />
           </Link>
           <div className="flex items-center gap-4 text-sm font-semibold text-gray-900">
-            <a href="tel:+15053157773" className="hover:text-[#279A92]"> (505) 315-7773</a>
+            <a href="tel:+18666572383" className="hover:text-[#279A92]"> (866) 657-2383</a>
             <span className="hidden sm:block h-5 w-px bg-gray-300" />
             <a href="mailto:sales@callordut.com" className="hover:text-[#279A92]">sales@callordut.com</a>
           </div>
