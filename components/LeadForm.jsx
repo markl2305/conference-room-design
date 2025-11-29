@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { gtagLeadSubmit } from "@/lib/gtag";
 
 export default function LeadForm() {
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ export default function LeadForm() {
 
       setMsg({ type: "success", text: "Thanks—your message was sent." });
       form.reset();
+      gtagLeadSubmit("design_callordut_main_form");
     } catch (err) {
       setMsg({ type: "error", text: err?.message || "Email could not be sent." });
     } finally {
