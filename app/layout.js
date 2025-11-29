@@ -42,6 +42,15 @@ export default function RootLayout({ children }) {
         ) : null}
 
         {children}
+
+        {/* ElevenLabs voice/text agent */}
+        <elevenlabs-convai agent-id="agent_8401kb8nr99ffnb9m236xyabwjyx"></elevenlabs-convai>
+        <Script
+          src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+          async
+          type="text/javascript"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
