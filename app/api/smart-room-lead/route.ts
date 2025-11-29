@@ -105,7 +105,7 @@ export async function POST(req: Request) {
     const internal = await resend.emails.send({
       from: "CalLord UT Leads <leads@design.callordut.com>",
       to: ["sales@callordut.com"],
-      reply_to: email,
+      replyTo: email,
       subject: `New Smart Room ${subjectPrefix} lead – ${firmName}`,
       html: internalHtml,
     });
