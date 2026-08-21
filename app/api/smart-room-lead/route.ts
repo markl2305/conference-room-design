@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rateLimit, getClientIp, escapeHtml, isPlausibleEmail } from "@/lib/mail-guard";
 import { resend } from "@/lib/resend";
 
 export const runtime = "nodejs";
@@ -40,6 +41,25 @@ function validate(body: LeadBody) {
 
 export async function POST(req: Request) {
   try {
+    // ⚠ VOLUME BOUND (audit F-0056). This route sends a second mail to an address the
+    // caller supplies, on the platform's shared Resend key. Two keys, because they bound
+    // different things: per-IP stops one noisy sender, per-RECIPIENT stops the same
+    // address being mailed repeatedly from rotating sources.
+    //
+    // Honest about what this is NOT: a fixed-window counter in one isolate's module scope.
+    // Not sliding, not shared between isolates or regions, and useless against a
+    // distributed sender. The arbitrary-recipient authority is removed below by pinning
+    // the autoresponder to a validated address and escaping what goes into it — this only
+    // bounds volume.
+    const ip = getClientIp(req.headers);
+    const ipGate = rateLimit(`smart-room-lead:ip:${ip}`, 5, 60_000);
+    if (!ipGate.allowed) {
+      return NextResponse.json(
+        { success: false, message: "Too many requests. Please try again shortly." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((ipGate.resetAt - Date.now()) / 1000)) } }
+      );
+    }
+
     const body: LeadBody = await req.json();
     const errors = validate(body);
     if (errors.length) {
@@ -103,9 +123,9 @@ export async function POST(req: Request) {
         <h2>We received your Smart Room ${type === "audit" ? "audit" : "consultation"} request</h2>
         <p>Thanks for reaching out. We’ll reply within one business day.</p>
         <ul>
-          <li><strong>Firm:</strong> ${firmName}</li>
-          <li><strong>Rooms:</strong> ${rooms}</li>
-          <li><strong>Platform:</strong> ${platform}</li>
+          <li><strong>Firm:</strong> ${escapeHtml(firmName)}</li>
+          <li><strong>Rooms:</strong> ${escapeHtml(rooms)}</li>
+          <li><strong>Platform:</strong> ${escapeHtml(platform)}</li>
         </ul>
         <p>If anything is time-sensitive, call us at (505) 315-7773.</p>
         <p style="margin-top:16px">— CalLord Unified Technologies</p>
@@ -136,6 +156,18 @@ export async function POST(req: Request) {
         },
         { status: 502 }
       );
+    }
+
+    // The autoresponder goes ONLY to the submitted address, and only if it is a plausible
+    // one — a value carrying a comma, angle bracket or quote is a header-injection attempt,
+    // not an email address. A per-recipient window stops the same victim being mailed
+    // repeatedly from different sources.
+    if (!isPlausibleEmail(email)) {
+      return NextResponse.json({ success: true, message: "Received." });
+    }
+    const toGate = rateLimit(`smart-room-lead:to:${String(email).toLowerCase()}`, 3, 3_600_000);
+    if (!toGate.allowed) {
+      return NextResponse.json({ success: true, message: "Received." });
     }
 
     const confirmation = await resend.emails.send({
