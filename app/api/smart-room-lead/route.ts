@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { rateLimit, getClientIp, escapeHtml, isPlausibleEmail } from "@/lib/mail-guard";
+import { rateLimit, getClientIp, escapeHtml, escapeSubject, isPlausibleEmail } from "@/lib/mail-guard";
 import { resend } from "@/lib/resend";
 
 export const runtime = "nodejs";
@@ -98,23 +98,29 @@ export async function POST(req: Request) {
     const subjectPrefix = type === "audit" ? "AUDIT" : "CONSULT";
     const interestsLine = interests.length ? interests.join(", ") : "Not specified";
 
+    // ⚠ ESCAPED 2026-08-22, audit F-0066. Every field below is caller-supplied and was
+    // interpolated RAW while the autoresponder twenty lines down was already escaped. Rendered
+    // with a hostile payload, this body EXECUTED script and produced two attacker-authored
+    // links, one displaying callordut.com while pointing elsewhere. It is the mail staff open
+    // for every lead, from our own sending domain — a more trusted context than the
+    // autoresponder, not a less trusted one, which is why it needed this more, not less.
     const internalHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
-        <h2>New Smart Room ${subjectPrefix} lead – ${firmName}</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "—"}</p>
-        <p><strong>Role:</strong> ${role || "—"}</p>
-        <p><strong>Rooms:</strong> ${rooms}</p>
-        <p><strong>Platform:</strong> ${platform}</p>
-        <p><strong>Interests:</strong> ${interestsLine}</p>
-        <p><strong>Primary Pain:</strong><br>${(primaryPain || "—").replace(/\n/g, "<br>")}</p>
-        <p><strong>UTM Source:</strong> ${utmSource || "—"}</p>
-        <p><strong>UTM Medium:</strong> ${utmMedium || "—"}</p>
-        <p><strong>UTM Campaign:</strong> ${utmCampaign || "—"}</p>
-        <p><strong>UTM Term:</strong> ${utmTerm || "—"}</p>
-        <p><strong>GCLID:</strong> ${gclid || "—"}</p>
-        <p><strong>Page URL:</strong> ${pageUrl || "—"}</p>
+        <h2>New Smart Room ${subjectPrefix} lead – ${escapeHtml(firmName)}</h2>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(phone || "—")}</p>
+        <p><strong>Role:</strong> ${escapeHtml(role || "—")}</p>
+        <p><strong>Rooms:</strong> ${escapeHtml(rooms)}</p>
+        <p><strong>Platform:</strong> ${escapeHtml(platform)}</p>
+        <p><strong>Interests:</strong> ${escapeHtml(interestsLine)}</p>
+        <p><strong>Primary Pain:</strong><br>${escapeHtml(primaryPain || "—", 2000).replace(/\n/g, "<br>")}</p>
+        <p><strong>UTM Source:</strong> ${escapeHtml(utmSource || "—")}</p>
+        <p><strong>UTM Medium:</strong> ${escapeHtml(utmMedium || "—")}</p>
+        <p><strong>UTM Campaign:</strong> ${escapeHtml(utmCampaign || "—")}</p>
+        <p><strong>UTM Term:</strong> ${escapeHtml(utmTerm || "—")}</p>
+        <p><strong>GCLID:</strong> ${escapeHtml(gclid || "—")}</p>
+        <p><strong>Page URL:</strong> ${escapeHtml(pageUrl || "—")}</p>
       </div>
     `;
 
@@ -139,11 +145,20 @@ export async function POST(req: Request) {
       process.env.LEAD_INBOX_EMAIL ||
       "mark@mail.callordut.com";
 
+    // ⚠ replyTo is VALIDATED BEFORE USE (F-0066). isPlausibleEmail already existed in this
+    // file but was not consulted until line ~165, twenty lines AFTER this send, and only to
+    // gate the autoresponder — so the internal mail took an unvalidated address as a header.
+    // An unusable value drops the header rather than failing the send: the lead still arrives,
+    // which matters because refusing it would turn a malformed field into lost business.
+    const replyToOk = isPlausibleEmail(email);
+
     const internal = await resend.emails.send({
       from: fromAddress,
       to: Array.isArray(toAddress) ? toAddress : [toAddress],
-      replyTo: email,
-      subject: `New Smart Room ${subjectPrefix} lead – ${firmName}`,
+      ...(replyToOk ? { replyTo: email } : {}),
+      // escapeSubject, NOT escapeHtml: a subject is not HTML and entities would render
+      // literally. It strips CR/LF, which escapeText deliberately preserves.
+      subject: escapeSubject(`New Smart Room ${subjectPrefix} lead – ${firmName}`),
       html: internalHtml,
     });
 

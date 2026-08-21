@@ -93,6 +93,28 @@ export function escapeText(value: unknown, maxLen = 2000): string {
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
 }
 
+/**
+ * Escape for a mail SUBJECT line — and this is NOT escapeText.
+ *
+ * `escapeText` above deliberately PRESERVES \t, \n and \r: its regex skips \u0009,
+ * \u000A and \u000D because a plaintext body legitimately contains newlines. A subject
+ * line is a header, and CR/LF in a header is the injection vector — a caller-supplied
+ * value carrying a newline can append headers of its own. So the subject needs the
+ * opposite treatment from the body, and reusing escapeText here would have looked
+ * correct while leaving the actual vector open (audit F-0066).
+ *
+ * ⛔ NOT escapeHtml either: a subject is not HTML, so escaping `&` and `<` there would
+ * render literal `&amp;` in the recipient's mail client — a display bug dressed as a fix.
+ */
+export function escapeSubject(value: unknown, maxLen = 150): string {
+  return String(value ?? '')
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\u0000-\u001F\u007F]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLen);
+}
+
 /** RFC-shaped enough to reject a header-injection attempt or a non-address. */
 export function isPlausibleEmail(value: unknown): value is string {
   return typeof value === 'string'

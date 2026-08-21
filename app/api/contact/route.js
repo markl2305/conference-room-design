@@ -1,6 +1,6 @@
 // app/api/contact/route.js
 import { NextResponse } from "next/server";
-import { rateLimit, getClientIp, escapeHtml, isPlausibleEmail } from "@/lib/mail-guard";
+import { rateLimit, getClientIp, escapeHtml, escapeSubject, isPlausibleEmail } from "@/lib/mail-guard";
 import { Resend } from "resend";
 
 export const runtime = "nodejs";
@@ -112,18 +112,20 @@ export async function POST(req) {
     const fromAddress = process.env.LEAD_FROM_EMAIL || "mark@mail.callordut.com";
     const toAddress = process.env.LEAD_TO_EMAIL || "mark@mail.callordut.com";
 
+    // ⚠ ESCAPED 2026-08-22, audit F-0066 — see lib/mail-guard.ts. Every field is caller-supplied
+    // and was raw while prospectHtml below was already escaped. This is the mail staff read.
     const internalHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
-        <h2>New Lead — ${lead.name || "Unknown"}</h2>
-        <p><strong>Name:</strong> ${lead.name || "—"}</p>
-        <p><strong>Email:</strong> ${lead.email || "—"}</p>
-        <p><strong>Phone:</strong> ${lead.phone || "—"}</p>
-        <p><strong>Role:</strong> ${lead.role || "—"}</p>
-        <p><strong>Facility Type:</strong> ${lead.facilityType || "—"}</p>
-        <p><strong>State:</strong> ${lead.state || "—"}</p>
-        <p><strong>Urgency:</strong> ${lead.urgency || "—"}</p>
-        <p><strong>Source:</strong> ${lead.source || "—"}</p>
-        <p><strong>Details:</strong><br>${(lead.details || "—").replace(/\n/g, "<br>")}</p>
+        <h2>New Lead — ${escapeHtml(lead.name || "Unknown")}</h2>
+        <p><strong>Name:</strong> ${escapeHtml(lead.name || "—")}</p>
+        <p><strong>Email:</strong> ${escapeHtml(lead.email || "—")}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(lead.phone || "—")}</p>
+        <p><strong>Role:</strong> ${escapeHtml(lead.role || "—")}</p>
+        <p><strong>Facility Type:</strong> ${escapeHtml(lead.facilityType || "—")}</p>
+        <p><strong>State:</strong> ${escapeHtml(lead.state || "—")}</p>
+        <p><strong>Urgency:</strong> ${escapeHtml(lead.urgency || "—")}</p>
+        <p><strong>Source:</strong> ${escapeHtml(lead.source || "—")}</p>
+        <p><strong>Details:</strong><br>${escapeHtml(lead.details || "—", 2000).replace(/\n/g, "<br>")}</p>
       </div>
     `;
 
@@ -141,11 +143,14 @@ export async function POST(req) {
       </div>
     `;
 
+    // replyTo validated BEFORE use (F-0066); an unusable value drops the header, never the lead.
+    const replyToOk = isPlausibleEmail(lead.email);
+
     const internal = await resend.emails.send({
       from: fromAddress,
       to: [toAddress],
-      replyTo: lead.email,
-      subject: `New Lead — ${lead.name || "Prospect"}`,
+      ...(replyToOk ? { replyTo: lead.email } : {}),
+      subject: escapeSubject(`New Lead — ${lead.name || "Prospect"}`),
       html: internalHtml,
     });
 
