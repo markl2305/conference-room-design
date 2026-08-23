@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rateLimit, getClientIp, escapeHtml, escapeSubject, isPlausibleEmail } from "@/lib/mail-guard";
 import { resend } from "@/lib/resend";
 
 export const runtime = "nodejs";
@@ -40,6 +41,25 @@ function validate(body: LeadBody) {
 
 export async function POST(req: Request) {
   try {
+    // ⚠ VOLUME BOUND (audit F-0056). This route sends a second mail to an address the
+    // caller supplies, on the platform's shared Resend key. Two keys, because they bound
+    // different things: per-IP stops one noisy sender, per-RECIPIENT stops the same
+    // address being mailed repeatedly from rotating sources.
+    //
+    // Honest about what this is NOT: a fixed-window counter in one isolate's module scope.
+    // Not sliding, not shared between isolates or regions, and useless against a
+    // distributed sender. The arbitrary-recipient authority is removed below by pinning
+    // the autoresponder to a validated address and escaping what goes into it — this only
+    // bounds volume.
+    const ip = getClientIp(req.headers);
+    const ipGate = rateLimit(`smart-room-lead:ip:${ip}`, 5, 60_000);
+    if (!ipGate.allowed) {
+      return NextResponse.json(
+        { success: false, message: "Too many requests. Please try again shortly." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((ipGate.resetAt - Date.now()) / 1000)) } }
+      );
+    }
+
     const body: LeadBody = await req.json();
     const errors = validate(body);
     if (errors.length) {
@@ -78,23 +98,29 @@ export async function POST(req: Request) {
     const subjectPrefix = type === "audit" ? "AUDIT" : "CONSULT";
     const interestsLine = interests.length ? interests.join(", ") : "Not specified";
 
+    // ⚠ ESCAPED 2026-08-22, audit F-0066. Every field below is caller-supplied and was
+    // interpolated RAW while the autoresponder twenty lines down was already escaped. Rendered
+    // with a hostile payload, this body EXECUTED script and produced two attacker-authored
+    // links, one displaying callordut.com while pointing elsewhere. It is the mail staff open
+    // for every lead, from our own sending domain — a more trusted context than the
+    // autoresponder, not a less trusted one, which is why it needed this more, not less.
     const internalHtml = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
-        <h2>New Smart Room ${subjectPrefix} lead – ${firmName}</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "—"}</p>
-        <p><strong>Role:</strong> ${role || "—"}</p>
-        <p><strong>Rooms:</strong> ${rooms}</p>
-        <p><strong>Platform:</strong> ${platform}</p>
-        <p><strong>Interests:</strong> ${interestsLine}</p>
-        <p><strong>Primary Pain:</strong><br>${(primaryPain || "—").replace(/\n/g, "<br>")}</p>
-        <p><strong>UTM Source:</strong> ${utmSource || "—"}</p>
-        <p><strong>UTM Medium:</strong> ${utmMedium || "—"}</p>
-        <p><strong>UTM Campaign:</strong> ${utmCampaign || "—"}</p>
-        <p><strong>UTM Term:</strong> ${utmTerm || "—"}</p>
-        <p><strong>GCLID:</strong> ${gclid || "—"}</p>
-        <p><strong>Page URL:</strong> ${pageUrl || "—"}</p>
+        <h2>New Smart Room ${subjectPrefix} lead – ${escapeHtml(firmName)}</h2>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(phone || "—")}</p>
+        <p><strong>Role:</strong> ${escapeHtml(role || "—")}</p>
+        <p><strong>Rooms:</strong> ${escapeHtml(rooms)}</p>
+        <p><strong>Platform:</strong> ${escapeHtml(platform)}</p>
+        <p><strong>Interests:</strong> ${escapeHtml(interestsLine)}</p>
+        <p><strong>Primary Pain:</strong><br>${escapeHtml(primaryPain || "—", 2000).replace(/\n/g, "<br>")}</p>
+        <p><strong>UTM Source:</strong> ${escapeHtml(utmSource || "—")}</p>
+        <p><strong>UTM Medium:</strong> ${escapeHtml(utmMedium || "—")}</p>
+        <p><strong>UTM Campaign:</strong> ${escapeHtml(utmCampaign || "—")}</p>
+        <p><strong>UTM Term:</strong> ${escapeHtml(utmTerm || "—")}</p>
+        <p><strong>GCLID:</strong> ${escapeHtml(gclid || "—")}</p>
+        <p><strong>Page URL:</strong> ${escapeHtml(pageUrl || "—")}</p>
       </div>
     `;
 
@@ -103,9 +129,9 @@ export async function POST(req: Request) {
         <h2>We received your Smart Room ${type === "audit" ? "audit" : "consultation"} request</h2>
         <p>Thanks for reaching out. We’ll reply within one business day.</p>
         <ul>
-          <li><strong>Firm:</strong> ${firmName}</li>
-          <li><strong>Rooms:</strong> ${rooms}</li>
-          <li><strong>Platform:</strong> ${platform}</li>
+          <li><strong>Firm:</strong> ${escapeHtml(firmName)}</li>
+          <li><strong>Rooms:</strong> ${escapeHtml(rooms)}</li>
+          <li><strong>Platform:</strong> ${escapeHtml(platform)}</li>
         </ul>
         <p>If anything is time-sensitive, call us at (505) 315-7773.</p>
         <p style="margin-top:16px">— CalLord Unified Technologies</p>
@@ -119,11 +145,20 @@ export async function POST(req: Request) {
       process.env.LEAD_INBOX_EMAIL ||
       "mark@mail.callordut.com";
 
+    // ⚠ replyTo is VALIDATED BEFORE USE (F-0066). isPlausibleEmail already existed in this
+    // file but was not consulted until line ~165, twenty lines AFTER this send, and only to
+    // gate the autoresponder — so the internal mail took an unvalidated address as a header.
+    // An unusable value drops the header rather than failing the send: the lead still arrives,
+    // which matters because refusing it would turn a malformed field into lost business.
+    const replyToOk = isPlausibleEmail(email);
+
     const internal = await resend.emails.send({
       from: fromAddress,
       to: Array.isArray(toAddress) ? toAddress : [toAddress],
-      replyTo: email,
-      subject: `New Smart Room ${subjectPrefix} lead – ${firmName}`,
+      ...(replyToOk ? { replyTo: email } : {}),
+      // escapeSubject, NOT escapeHtml: a subject is not HTML and entities would render
+      // literally. It strips CR/LF, which escapeText deliberately preserves.
+      subject: escapeSubject(`New Smart Room ${subjectPrefix} lead – ${firmName}`),
       html: internalHtml,
     });
 
@@ -136,6 +171,18 @@ export async function POST(req: Request) {
         },
         { status: 502 }
       );
+    }
+
+    // The autoresponder goes ONLY to the submitted address, and only if it is a plausible
+    // one — a value carrying a comma, angle bracket or quote is a header-injection attempt,
+    // not an email address. A per-recipient window stops the same victim being mailed
+    // repeatedly from different sources.
+    if (!isPlausibleEmail(email)) {
+      return NextResponse.json({ success: true, message: "Received." });
+    }
+    const toGate = rateLimit(`smart-room-lead:to:${String(email).toLowerCase()}`, 3, 3_600_000);
+    if (!toGate.allowed) {
+      return NextResponse.json({ success: true, message: "Received." });
     }
 
     const confirmation = await resend.emails.send({
