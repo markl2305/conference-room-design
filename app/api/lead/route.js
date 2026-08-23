@@ -1,8 +1,24 @@
 import { Resend } from "resend";
-import { escapeHtml, escapeSubject, isPlausibleEmail } from "@/lib/mail-guard";
+import { rateLimit, getClientIp, escapeHtml, escapeSubject, isPlausibleEmail } from "@/lib/mail-guard";
 
 export async function POST(req) {
   try {
+    // ⛔ F-0069 / turn 172. This route carried a census EXEMPTION claiming its
+    //    caller-addressed send "never fires". That premise was false (see 6e55665) and
+    //    the exemption ALSO hid a real gap: escaping and isPlausibleEmail had landed here,
+    //    but the volume bound never had. Removing the stale exemption turned the census red
+    //    for a true reason, which is what an exemption is supposed to make impossible.
+    //
+    //    ⚠️ rateLimit is a FIXED-WINDOW counter in one serverless isolate — a volume bound,
+    //    not an authorization control. It bounds one noisy sender and nothing distributed.
+    //    Same limits as the sibling routes in this repo, deliberately.
+    const ip = getClientIp(req.headers);
+    if (!rateLimit(`lead:ip:${ip}`, 5, 60_000).allowed) {
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
 
     const {

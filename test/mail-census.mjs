@@ -28,12 +28,20 @@ const MARKS = {
  * Routes that reach a sender and legitimately need no marks. A reason, not a name.
  */
 const EXEMPT = {
-  // Gated behind an unset LEAD_SEND_CONFIRMATION env var AND independently broken by a
-  // resend ^4.x response-shape mismatch — the code tests `sendResult.id` while v4 returns
-  // {data, error}, so the route 502s before the gated confirmation branch can run. Two
-  // independent reasons the caller-addressed send never fires. Verified at origin/main
-  // 2026-08-22. Fixing a route that never sends would be inventing a fix.
-  'app/api/lead/route.js': 'legacy: confirmation send is env-gated AND broken by a resend v4 response-shape mismatch',
+  // ⛔ EMPTIED 2026-08-23 (turn 172). `app/api/lead/route.js` was listed here as
+  //    "env-gated AND broken by a resend v4 response-shape mismatch — the caller-addressed
+  //    send never fires". ⛔ THAT PREMISE IS FALSE and this repo's own commit 6e55665 says
+  //    so: the early return fires only when RESEND_API_KEY is ABSENT, and the key IS present
+  //    because sibling routes in the same deployment demonstrably send with it.
+  //
+  //    ⭐ AND THE SAME COMMIT GUARDED THE ROUTE — escapeHtml/escapeSubject on the body,
+  //    reply_to validated, and the confirmation send now requires isPlausibleEmail as well
+  //    as the env flag. So the route is GUARDED, not exempt, and this table went on
+  //    asserting a refuted reason for a route that had already been fixed.
+  //
+  //    ⛔ A stale exemption is worse than a missing check: it PASSES the census while
+  //    describing behaviour the code no longer has, so removing the guard later would still
+  //    read GREEN. An exemption must be re-earned whenever the route changes.
 };
 
 function walk(dir) {
